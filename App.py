@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, request
 
 # Create a Flask application
 app = Flask(__name__)
@@ -9,6 +9,14 @@ def home():
 @app.route('/index')
 def index():
     return "<h1>Create a Customer Account</h1>"
+@app.route('/form', methods = ["GET", "POST"])
+def form():
+    if request.method == "GET":
+        return render_template("form.html")
+#def Profile():
+    #if request.method == "POST":
+        #return render_template("CreateProfile.html")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False
+    )
