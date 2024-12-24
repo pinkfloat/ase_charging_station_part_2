@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Profile</title>
+    <title>Login Screen</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> <!-- Include CSS for styling -->
 </head>
 <body>
     <div class="container">
-        <h2 class="page-title">Create Profile</h2>
-        <form action="/create-profile" method="POST">
+        <h2 class="page-title">Login</h2>
+        <form action="/login" method="POST">
             <div class="form-group">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
@@ -19,7 +19,8 @@
                 <input type="password" id="password" name="password" required>
             </div>
             <div class="button-container">
-                <button type="submit" class="create-profile-button">Create Profile</button>
+                <button type="submit" class="login-button">Login</button>
+                <button type="button" class="create-profile-button" onclick="location.href='/create-profile';">Create Profile</button>
             </div>
         </form>
     </div>
