@@ -9,7 +9,7 @@ known_user = {
 
 @app.route('/')
 def home():
-    return "Welcome to Berlin Charging Station"
+    return render_template("MainPage.html")
 
 @app.route('/login', methods = ["GET", "POST"])
 def login():
