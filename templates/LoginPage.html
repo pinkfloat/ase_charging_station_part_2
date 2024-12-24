@@ -4,83 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Screen</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Optional: Include CSS for styling -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-        }
-
-        .login-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .login-container h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-
-        .form-group input {
-            width: calc(100% - 20px);
-            padding: 10px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .form-actions button {
-            padding: 10px 20px;
-            font-size: 14px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .submit-btn {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .submit-btn:hover {
-            background-color: #0056b3;
-        }
-
-        .create-profile-btn {
-            background-color: #28a745;
-            color: white;
-        }
-
-        .create-profile-btn:hover {
-            background-color: #218838;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> <!-- Include CSS for styling -->
 </head>
 <body>
-    <div class="login-container">
-        <h2>Login</h2>
+    <div class="container">
+        <h2 class="page-title">Login</h2>
         <form action="/login" method="POST">
             <div class="form-group">
                 <label for="username">Username:</label>
@@ -90,9 +18,9 @@
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <div class="form-actions">
-                <button type="submit" class="submit-btn">Login</button>
-                <button type="button" class="create-profile-btn" onclick="location.href='/create-profile';">Create Profile</button>
+            <div class="button-container">
+                <button type="submit" class="login-button">Login</button>
+                <button type="button" class="create-profile-button" onclick="location.href='/create-profile';">Create Profile</button>
             </div>
         </form>
     </div>
