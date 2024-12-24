@@ -11,10 +11,6 @@ known_user = {
 def home():
     return "Welcome to Berlin Charging Station"
 
-@app.route('/index')
-def index():
-    return "<h1>Create a Customer Account</h1>"
-
 @app.route('/login', methods = ["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -32,9 +28,9 @@ def login():
     else: #if request.method == "GET":
         return render_template("LoginPage.html")
 
-#def Profile():
-    #if request.method == "POST":
-        #return render_template("CreateProfile.html")
+@app.route('/create-profile')
+def new_profile():
+    return render_template("CreateProfile.html")
 
 if __name__ == "__main__":
     app.run(debug=False)
