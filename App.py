@@ -12,7 +12,7 @@ def index():
 @app.route('/form', methods = ["GET", "POST"])
 def form():
     if request.method == "GET":
-        return render_template("form.html")
+        return render_template("LoginPage.html")
 #def Profile():
     #if request.method == "POST":
         #return render_template("CreateProfile.html")

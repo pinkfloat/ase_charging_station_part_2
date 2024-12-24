@@ -6,7 +6,6 @@
     <title>Login Screen</title>
     <link rel="stylesheet" href="styles.css"> <!-- Optional: Include CSS for styling -->
     <style>
-        /* Basic inline CSS for quick styling */
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -18,10 +17,9 @@
         }
 
         .login-container {
-            background: #fff;
+            background: white;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
         }
@@ -36,13 +34,12 @@
         }
 
         .form-group label {
-            display: block;
             font-size: 14px;
             margin-bottom: 5px;
         }
 
         .form-group input {
-            width: 100%;
+            width: calc(100% - 20px);
             padding: 10px;
             font-size: 14px;
             border: 1px solid #ccc;
@@ -52,8 +49,6 @@
         .form-actions {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
         }
 
         .form-actions button {
@@ -64,21 +59,21 @@
             cursor: pointer;
         }
 
-        .form-actions button.submit-btn {
+        .submit-btn {
             background-color: #007bff;
             color: white;
         }
 
-        .form-actions button.submit-btn:hover {
+        .submit-btn:hover {
             background-color: #0056b3;
         }
 
-        .form-actions button.create-profile-btn {
+        .create-profile-btn {
             background-color: #28a745;
             color: white;
         }
 
-        .form-actions button.create-profile-btn:hover {
+        .create-profile-btn:hover {
             background-color: #218838;
         }
     </style>
