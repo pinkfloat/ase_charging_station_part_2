@@ -9,7 +9,8 @@
 - add the 2 significant csv and excel files from the first project part to a "data" folder
 - add a "tools" folder and create a createChargingStationDatabase.py file (or similar in naming)
 - Use the new script to read the tables of the first project part
-- create a new table for charging stations from it containing ID | Name | latitude | longitude | zip code | ratingID
+- create a new table for charging stations from it containing stationID | stationOperator | stationName | PLZ |Bundesland | Latitude | Longitude | KW | geometry | ratingID
+
 - ratingID will remain empty for now, the other things should be "stripped" from the original tables of the
   first project part so that we have for each charging station an individual ID and name together with its
   location (latitude and longitude) and in which zip code it stands
