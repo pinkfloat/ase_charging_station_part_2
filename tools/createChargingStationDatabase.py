@@ -21,11 +21,11 @@ def sort_by_plz_add_geometry(dfr, dfg):
     sorted_df2              = sorted_df.merge(df_geo, on='PLZ', how ='left')
     sorted_df3              = sorted_df2.dropna(subset=['geometry'])
     
-    sorted_df3['geometry']  = gpd.GeoSeries.from_wkt(sorted_df3['geometry'])
-    ret                     = gpd.GeoDataFrame(sorted_df3, geometry='geometry')
+    sorted_df3.loc[:, 'geometry'] = gpd.GeoSeries.from_wkt(sorted_df3['geometry'])
+    
+    ret = gpd.GeoDataFrame(sorted_df3, geometry='geometry')
     
     return ret
-
 
 
 def preprocess_lstat(dfr, dfg):
@@ -55,9 +55,6 @@ def preprocess_lstat(dfr, dfg):
 
     # Add an ID column with row numbers starting from 1
     ret['stationID'] = range(1, len(ret) + 1)
-
-    # Add a blank column named 'Remarks' (all values set to empty strings)
-    ret['ratingID'] = ''
     
     return ret
 

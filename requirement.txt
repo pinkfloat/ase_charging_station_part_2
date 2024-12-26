@@ -1,0 +1,5 @@
+firebase-admin
+flask
+openpyxl
+pandas
+geopandas
