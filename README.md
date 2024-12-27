@@ -1,30 +1,21 @@
 # ase_charging_station_part_2
 
-### remaining tasks are almost done as suggested by Pinkfoat
-
-### future task 
-#### Major Issue 1. at present there is a conflict between Dash and flask URL, if an un-authenticated user directly enter /dashboard , flask restrict since it user id is not stored as a session variable. But in Dash config, this type of auth mechanism or session variable does not exist. So now if an user enter "/dashboard/" is routed to the last logged in state. Need to fix it
-
-#### Minor Issue : The zoom feature of the map is static, but ideally it should dynamically zoom in when a pincode is searched, sensing the right, left, top, bottom most co-ordinates.
-
 ### TODO / Next Tasks:
-#### 1. Implement Create Profile
-- We also need a place to store new user data - we can do it either temporarily in a dictionary or create a "database" using a csv or json file
-#### 2. Create Map on Mainpage
-- Scale map so that Berlin is shown in the centre
+#### 1. Cleanup code & commentaries
+#### 2. Implement Unit Tests for all functions
+#### 3. Fix any bugs you might encounter
+#### 4. Draw flowcharts for use case functions and other requested diagrams
 
-### Future Tasks:
-- Once we have a map, we can add markers on the map using the latitude and longitude of the charging stations from the ChargingStationData.csv (containing stationID | stationOperator | stationName | PLZ |Bundesland | Latitude | Longitude | KW | geometry)
-    - Once we have markers, we need a function that handles what happens if they are clicked (maybe some popup window showing info about the charging station, or we show the info below the map if you don't like popups - feel free to design whatever you like)
-    - The Info page shall show the stored info about the clicked charging station (ID, Name, latitude, longitude, plz and a "rating average") as well as the possibility for users to rate the station
-    - If someone wants to rate a station (by text or stars) it shall be checked if they are logged in on a profile and if not, they need to login or create one
-    - If the login criteria is fulfilled, the user shall be able to give a rating of the station in stars (and if they want additionally text)
-- Once we have a map we are also able to fulfill usecase 1 "search for charging stations"
-    - one would have to add a text-input field to allow the search for charging stations by postal codes
-    - once a postal code is entered there, a list with charging stations shall be shown (as pop up or below the map)
-    - if one clicks on the elements of the list (the charging stations by id and name etc.) the map shall zoom to the very charging station and show its individual info (derived from ChargingStationData.csv)
+---
 
+### Known issues:
+#### 1. Bug:
+At present there is a conflict between Dash and flask URL, if an un-authenticated user directly enter /dashboard , flask restrict since it user id is not stored as a session variable. But in Dash config, this type of auth mechanism or session variable does not exist. So now if an user loggs out and afterwards enters "/dashboard/", he is routed to the last logged in state.
 
+#### 2. Feature:
+The zoom feature of the map is static, but ideally it should dynamically zoom in when a pincode is searched, sensing the right, left, top, bottom most co-ordinates.
+
+---
 
 ### Hints how to use git:
 #### Cloning a repository:
