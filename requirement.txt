@@ -1,5 +1,7 @@
+dash
 firebase-admin
 flask
 openpyxl
 pandas
+plotly
 geopandas
