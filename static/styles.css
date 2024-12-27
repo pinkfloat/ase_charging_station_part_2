@@ -1,4 +1,6 @@
-/* General styles for both Login and Create Profile pages */
+
+
+
 body {
     font-family: Arial, sans-serif;
     display: flex;
@@ -6,7 +8,22 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #f4f4f9;
+    background-image: url('background-image.jpeg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(244, 244, 249, 0.3); /* #f4f4f9 with 50% opacity */
+    z-index: -1;
 }
 
 .container {
@@ -15,15 +32,16 @@ body {
     border-radius: 10px;
     width: 100%;
     max-width: 400px;
+    position: relative;
+    z-index: 1;
 }
 
-/* Title styles */
+
 .page-title {
     text-align: center;
     margin-bottom: 20px;
 }
 
-/* Form group styles */
 .form-group {
     margin-bottom: 15px;
 }
@@ -41,20 +59,26 @@ body {
     border-radius: 5px;
 }
 
-/* Buttons container */
 .button-container {
     display: flex;
     justify-content: space-between;
 }
 
-/* Login button styles */
-.login-button {
+.login-button, .create-profile-button {
     padding: 10px 20px;
     font-size: 14px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.login-button {
     background-color: #007bff;
+    color: white;
+}
+
+.create-profile-button {
+    background-color: #28a745;
     color: white;
 }
 
@@ -62,17 +86,25 @@ body {
     background-color: #0056b3;
 }
 
-/* Create Profile button styles */
-.create-profile-button {
-    padding: 10px 20px;
-    font-size: 14px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    background-color: #28a745;
-    color: white;
-}
-
 .create-profile-button:hover {
     background-color: #218838;
+}
+
+/* Flash message styling */
+ul {
+    padding: 0;
+    margin: 10px 0;
+}
+
+li {
+    list-style: none;
+    margin-bottom: 5px;
+}
+
+.success {
+    color: green;
+}
+
+.error {
+    color: red;
 }
