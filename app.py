@@ -16,8 +16,6 @@ from dash import Dash, dcc, html, Input, Output, State
 
 
 
-
-
 # Initialize Flask app
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Used for flashing messages
@@ -42,50 +40,90 @@ dash_app = Dash(__name__, server=app, url_base_pathname='/dashboard/')
 df = pd.read_csv('./data/ChargingStationData.csv', usecols=['stationID','stationName', 'stationOperator', 'PLZ', 'Latitude', 'Longitude', 'KW'])
 df['PLZ'] = df['PLZ'].astype(str)
 
+
+
+
+
+
+# Define the dashboard content separately
+def get_dashboard_content():
+
+    return  html.Div([
+                dcc.Location(id='url', refresh=False),
+                dcc.Interval(id='interval-component', interval=1000, n_intervals=0),
+
+                html.Div([
+                    html.Span(f"Welcome, ", id='welcome-user'),
+                    html.Span(id='username-display', style={'fontWeight': 'bold'}),
+                ], style={'position': 'absolute', 'top': '10px', 'left': '10px'}),
+
+                html.H1("Charging Stations", style={'textAlign': 'center'}),
+                html.A("Logout", href="/logout", style={'position': 'absolute', 'top': '10px', 'right': '10px'}),
+                html.Div([
+                    html.Div([
+                        dcc.Input(
+                            id='plz-search',
+                            type='text',
+                            placeholder='Please enter the Pincode here...',
+                            style={'width': '400px', 'margin': '10px'}
+                        ),
+                        html.Button('Search', id='search-button', n_clicks=0),
+                        html.Div(id='search-message', style={'color': 'red', 'margin': '10px'}),
+                        dcc.Graph(id='station-map', style={'height': '80vh'})
+                    ], style={'flex': '75%', 'display': 'flex', 'flexDirection': 'column'}),
+                    
+                    html.Div([
+                    html.Div(id='station-details'),
+                    html.Div(id='average-rating'),
+                    html.Div(id='reviews-list'),
+                    html.Div([
+                        dcc.Slider(id='rating-slider', min=1, max=5, step=1, marks={i: str(i) for i in range(1, 6)}),
+                        dcc.Input(
+                            id='feedback-input',
+                            type='text',
+                            placeholder='Leave feedback...',
+                            style={'width': '100%', 'margin-bottom': '10px'}
+                        ),
+                        html.Button('Submit Feedback', id='submit-feedback', n_clicks=0)
+                    ], id='feedback-div', style={'display': 'none'}),
+                    html.Div(id='feedback-output')
+                ], style={'flex': '25%', 'padding': '20px'})
+
+
+                ], style={'display': 'flex'})
+            ])
+
+
+# Define the basic layout
 dash_app.layout = html.Div([
-    dcc.Location(id='url', refresh=False),
-    dcc.Interval(id='interval-component', interval=1000, n_intervals=0),
-
-    html.Div([
-        html.Span(f"Welcome, ", id='welcome-user'),
-        html.Span(id='username-display', style={'fontWeight': 'bold'}),
-    ], style={'position': 'absolute', 'top': '10px', 'left': '10px'}),
-
-    html.H1("Charging Stations", style={'textAlign': 'center'}),
-    html.A("Logout", href="/logout", style={'position': 'absolute', 'top': '10px', 'right': '10px'}),
-    html.Div([
-        html.Div([
-            dcc.Input(
-                id='plz-search',
-                type='text',
-                placeholder='Please enter the Pincode here...',
-                style={'width': '400px', 'margin': '10px'}
-            ),
-            html.Button('Search', id='search-button', n_clicks=0),
-            html.Div(id='search-message', style={'color': 'red', 'margin': '10px'}),
-            dcc.Graph(id='station-map', style={'height': '80vh'})
-        ], style={'flex': '75%', 'display': 'flex', 'flexDirection': 'column'}),
-        
-        html.Div([
-        html.Div(id='station-details'),
-        html.Div(id='average-rating'),
-        html.Div(id='reviews-list'),
-        html.Div([
-            dcc.Slider(id='rating-slider', min=1, max=5, step=1, marks={i: str(i) for i in range(1, 6)}),
-            dcc.Input(
-                id='feedback-input',
-                type='text',
-                placeholder='Leave feedback...',
-                style={'width': '100%', 'margin-bottom': '10px'}
-            ),
-            html.Button('Submit Feedback', id='submit-feedback', n_clicks=0)
-        ], id='feedback-div', style={'display': 'none'}),
-        html.Div(id='feedback-output')
-    ], style={'flex': '25%', 'padding': '20px'})
-
-
-    ], style={'display': 'flex'})
+    dcc.Location(id='url', refresh=True),
+    html.Div(id='authenticated-content')
 ])
+
+# Add authentication check to all callbacks
+def require_login(func):
+    def wrapper(*args, **kwargs):
+        if 'user_id' not in session:
+            return dash.no_update
+        return func(*args, **kwargs)
+    return wrapper
+
+
+
+# Create the authentication callback
+@dash_app.callback(
+    Output('authenticated-content', 'children'),
+    [Input('url', 'pathname')]
+)
+def check_authentication(pathname):
+    if 'user_id' not in session:
+        return dcc.Location(id='redirect', pathname='/login')
+    return get_dashboard_content()
+
+
+
+
+
 
 
 
@@ -94,6 +132,7 @@ dash_app.layout = html.Div([
     Output('username-display', 'children'),
     Input('interval-component', 'n_intervals')
 )
+@require_login
 def update_username(n):
     return session.get('username', '')
 
@@ -108,7 +147,7 @@ def update_username(n):
      Input('station-map', 'figure')],
     State('plz-search', 'value')
 )
-
+@require_login
 def update_map(n_clicks, current_figure, search_plz):
     if not search_plz:
         filtered_df = df
@@ -144,6 +183,7 @@ def update_map(n_clicks, current_figure, search_plz):
      Output('reviews-list', 'children')],
     Input('station-map', 'clickData')
 )
+@require_login
 def display_station_details(click_data):
     if click_data:
         point_data = click_data['points'][0]
@@ -201,6 +241,7 @@ def display_station_details(click_data):
     [State('feedback-input', 'value'),
      State('rating-slider', 'value')]
 )
+@require_login
 def submit_feedback(n_clicks, click_data, feedback, rating):
     if n_clicks > 0 and feedback and rating and click_data:
         user_id = session.get('user_id')
@@ -327,10 +368,6 @@ def logout():
 @login_required
 def dashboard():
     return dash_app.index()
-
-
-
-
 
 
 
