@@ -1,5 +1,12 @@
 # ase_charging_station_part_2
 
+### remaining tasks are almost done as suggested by Pinkfoat
+
+### future task 
+#### Major Issue 1. at present there is a conflict between Dash and flask URL, if an un-authenticated user directly enter /dashboard , flask restrict since it user id is not stored as a session variable. But in Dash config, this type of auth mechanism or session variable does not exist. So now if an user enter "/dashboard/" is routed to the last logged in state. Need to fix it
+
+#### Minor Issue : The zoom feature of the map is static, but ideally it should dynamically zoom in when a pincode is searched, sensing the right, left, top, bottom most co-ordinates.
+
 ### TODO / Next Tasks:
 #### 1. Implement Create Profile
 - We also need a place to store new user data - we can do it either temporarily in a dictionary or create a "database" using a csv or json file
