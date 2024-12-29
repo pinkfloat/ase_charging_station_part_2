@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> <!-- Include CSS for styling -->
+</head>
+<body>
+    <div class="container">
+        <h2 class="page-title">Create Profile</h2>
+        <form action="/create-profile" method="POST">
+            <div class="form-group">
+            <!-- First Name -->
+                <label for="firstname">First Name:</label>
+                <input type="text" id="firstname" name="firstname" placeholder="First Name" required>
+            </div>
+            <!-- Last Name -->
+            <div class="form-group">
+                <label for="lastname">Last Name:</label>
+                <input type="lastname" id="lastname" name="lastname" placeholder="Last Name" required>
+            </div>
+            <!-- Email Address -->
+             <div class="form-group">
+                <label for="emailaddress">Email Address:</label>
+                <input type="emailaddress" id="emailaddress" name="emailaddress" placeholder="Email Address" required>
+            </div>
+            <!-- Username Address -->
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" placeholder="Username">
+            </div>
+            <!-- New Password Address -->
+             <div class="form-group">
+                <label for="password">New Password:</label>
+                <input type="password" id="password" name="password" required minlength="8" placeholder="New Password"
+                pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}" 
+                title="Password must be at least 8 characters long, include uppercase, lowercase, a number, and a special character."required>
+            </div>
+            <div class="form-group">
+                <label for="birthday">Birthday:</label>
+                <!-- Month Dropdown -->
+            <select id="month" name="month" required>
+                <option value="" disabled selected>Month</option>
+                <option value="01">January</option>
+                <option value="02">February</option>
+                <option value="03">March</option>
+                <option value="04">April</option>
+                <option value="05">May</option>
+                <option value="06">June</option>
+                <option value="07">July</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+
+            <!-- Day Dropdown -->
+            <select id="day" name="day" required>
+                <option value="" disabled selected>Day</option>
+                <!-- Generate days dynamically -->
+                <script>
+                    for (let i = 1; i <= 31; i++) {
+                        document.write(`<option value="${i < 10 ? '0' + i : i}">${i}</option>`);
+                    }
+                </script>
+            </select>
+            <!-- Year Dropdown -->
+            <select id="year" name="year" required>
+                <option value="" disabled selected>Year</option>
+                <!-- Generate years dynamically -->
+                <script>
+                    const currentYear = new Date().getFullYear();
+                    const startYear = currentYear - 100; // Limit age to 100 years max
+                    for (let i = currentYear; i >= startYear; i--) {
+                        document.write(`<option value="${i}">${i}</option>`);
+                    }
+                </script>
+            </select>
+            </div>
+            <!-- Contact Information -->
+             <div class="form-group">
+                <label for="contactinformation">Contact Number:</label>
+                <input type="contactinformation" id="contactinformation" name="contactinformation"inputmode="numeric" pattern="\d+" maxlength = "10" placeholder="Contact Number" required>
+            </div>
+            <!-- Gender Details -->
+             <div class="form-group">
+                <label for="Gender">Gender:</label>
+                <!-- Gender Dropdown -->
+            <select id="Gender" name="Gender" required>
+                <option value="" disabled selected>Gender</option>
+                <option value="01">Male</option>
+                <option value="02">Female</option>
+            </select>
+            <!-- Street Address -->
+            <div class="form-group">
+                <label for="street">Street:</label>
+                <input type="street" id="street" name="street" required maxlength="100" placeholder="Street Address"
+                pattern="[A-Za-z0-9\s,.-]+" 
+                title="Only letters, numbers, spaces, commas, periods, and dashes are allowed."required>
+            </div>
+            <!-- State dropdown -->
+            <div class="form-group">
+                <label for="state">State:</label>
+                <select id="state" name="state" required>
+                    <option value="">--Select a State--</option>
+                    <option value="Baden-Württemberg">Baden-Württemberg</option>
+                    <option value="Bavaria">Bavaria</option>
+                    <option value="Berlin">Berlin</option>
+                    <option value="Brandenburg">Brandenburg</option>
+                    <option value="Bremen">Bremen</option>
+                    <option value="Hamburg">Hamburg</option>
+                    <option value="Hesse">Hesse</option>
+                    <option value="Lower Saxony">Lower Saxony</option>
+                    <option value="Mecklenburg-Vorpommern">Mecklenburg-Vorpommern</option>
+                    <option value="North Rhine-Westphalia">Hesse</option>
+                    <option value="Rhineland-Palatinate">Hesse</option>
+                    <option value="Saarland">Hesse</option>
+                    <option value="Saxony-Anhalt">Saxony-Anhalt</option>
+                    <option value="Schleswig-Holstein">Schleswig-Holstein</option>
+                    <option value="Thuringia">Hesse</option>
+                </select>
+            </div>
+            <!-- City dropdown -->
+            <div class="form-group">
+                <label for="city">City:</label>
+                <select id="city" name="city" required>
+                    <option value="">--Select a City--</option>
+                </select>            
+            </div>
+             <!-- Zipcode -->
+            <div class="form-group">
+                <label for="zipcode">Zip Code:</label>
+                <input type="zipcode" id="zipcode" name="zipcode" pattern="\d+" maxlength="10" placeholder="Zip Code">
+            </div>
+            <div class="button-container">
+                <button type="submit" class="create-profile-button">Create Profile</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        // Dynamic city update based on selected state
+        const stateCityMap = {
+            "Bavaria": ["Munich", "Nuremberg", "Augsburg", "Regensburg", "Ingolstadt", "Wuerzburg", "Erlangen", "Passau"],
+            "Berlin": ["Berlin"],
+            "North Rhine-Westphalia": ["Cologne", "Düsseldorf", "Dortmund", "Essen", "Duisburg", "Bonn", "Aachen", "Wuppertal", "Bielefeld"],
+            "Hesse": ["Frankfurt", "Wiesbaden", "Kassel", "Darmstadt", "Offenbach", "Marburg"],
+            "Baden-Württemberg": ["Stuttgart", "Mannheim", "Karlsruhe", "Freiburg", "Heidelberg", "Ulm"],
+            "Saxony": ["Stuttgart", "Leipzig", "Chemnitz", "Zwickau", "Görlitz"],
+            "Lower Saxony": ["Hanover", "Braunschweig", "Osnabrück", "Göttingen", "Oldenburg"],
+            "Rhineland-Palatinate": ["Mainz", "Ludwigshafen", "Koblenz", "Trier", "Neustadt"],
+            "Schleswig-Holstein": ["Kiel", "Lübeck", "Flensburg", "Neumünster", "Elmshorn"],
+            "Mecklenburg-Vorpommern": ["Rostock", "Schwerin", "Stralsund", "Greifswald", "Neubrandenberg"],
+            "Brandenburg": ["Potsdam", "Cottbus", "Frankfurt", "Brandenburg an der Havel", "Königs Wusterhausen"],
+            "Saxony-Anhalt": ["Magdeburg", "Halle", "Dessau-Roßlau", "Wernigerode", "Bitterfeld-Wolfen"],
+            "Thuringia": ["Erfurt", "Jena", "Weimar", "Gera", "Altenburg"],
+            "Saarland": ["Saarbrücken", "Neunkirchen", "Homburg", "Völklingen"],
+            "Bremen": ["Bremen", "Bremerhaven"],
+            "Hamburg": ["Hamburg"],
+            "Lower Saxony": ["Hannover", "Braunschweig", "Osnabrück", "Göttingen", "Oldenburg"]
+        };
+
+        const stateSelect = document.getElementById('state');
+        const citySelect = document.getElementById('city');
+
+        function updateCities() {
+            const selectedState = stateSelect.value;
+            citySelect.innerHTML = "<option value=''>--Select a City--</option>";  // Reset cities
+
+            if (selectedState && stateCityMap[selectedState]) {
+                const cities = stateCityMap[selectedState];
+                cities.forEach(function(city) {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    citySelect.appendChild(option);
+                });
+            }
+        }
+
+        stateSelect.addEventListener('change', updateCities);
+    </script>
+</body>
+</html>
