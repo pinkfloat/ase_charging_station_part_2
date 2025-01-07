@@ -3,8 +3,10 @@ from datetime import datetime
 from enum import Enum
 from flask import session
 from firebase_admin import db
+import numpy as np
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import random
 
 def create_dash_app(flask_app):
@@ -48,7 +50,7 @@ def create_dash_app(flask_app):
             # If a charging station marker is clicked, the station details are shown
             html.Div([
                 html.Div(id='station-details'),
-                html.Div(id='availability'),
+                html.Div(id='status'),
                 html.Div(id='average-rating'),
                 html.Div(id='reviews-list'),
                 html.Div([
@@ -116,7 +118,7 @@ def create_dash_app(flask_app):
     # Callback to display charging station details and reviews when a station is clicked
     @dash_app.callback(
         [Output('station-details', 'children'),
-        Output('availability', 'children'),
+        Output('status', 'children'),
         Output('feedback-div', 'style'),
         Output('average-rating', 'children'),
         Output('reviews-list', 'children')],
@@ -149,6 +151,18 @@ def create_dash_app(flask_app):
                 OUT_OF_SERVICE = "out of service"
                 MAINTENANCE = "maintenance"
             random_status = random.choice(list(Status))
+
+            # Simulate rush hour graph
+            time_slots = ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM"]
+            random_data = np.random.normal(loc=2.5, scale=1.0, size=len(time_slots))
+            random_data = np.clip(random_data, 0, 5) # simulate 0-5 persons per hour
+            bar_chart = go.Figure(data=[go.Bar(x=time_slots, y=random_data, marker_color='skyblue')])
+            bar_chart.update_layout(
+                title='Simulated rush hour data',
+                xaxis_title='Time of Day',
+                yaxis_title='Persons per Hour',
+                template='plotly_white'
+            )
             
             return (
                 html.Div([
@@ -158,7 +172,10 @@ def create_dash_app(flask_app):
                     html.P(f"Power: {point_data['customdata'][3]} KW"),
                     html.P(f"PLZ: {point_data['customdata'][4]}"),
                 ]),
-                html.H4(f"Status: {random_status.value}"),
+                html.Div([
+                    html.H4(f"Status: {random_status.value}"),
+                    dcc.Graph(figure=bar_chart, style={'height': '300px'})
+                ]),
                 {'display': 'block'},
                 html.H4(f"Average Rating: {avg_rating:.2f}"),
                 html.Div(reviews_list)
@@ -170,7 +187,7 @@ def create_dash_app(flask_app):
                     html.P(f"There are {len(df)} charging stations in total."),
                     html.P("Please click on a station to view its details and leave a review.")
                 ]),
-                '', # no availability status
+                '', # no status
                 {'display': 'none'},
                 '', # no rating
                 ''  # no revies

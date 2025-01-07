@@ -1,9 +1,7 @@
 # ase_charging_station_part_2
 
 ### TODO / Next Tasks:
-#### 1. According to the miro board additions of the professor we shall also show "peak times" of charging stations
-- I would suggest to add an array "peak_times" with a randomized normal distribution to each charging station as mockup
-- The values of availability and peak times shall be applied/updated using an "update_status" function
+#### 1. Write a documentation
 #### 2. Cleanup code & commentaries
 #### 3. Implement Unit Tests for all functions
 #### 4. Fix any bugs you might encounter
