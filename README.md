@@ -1,15 +1,11 @@
 # ase_charging_station_part_2
 
 ### TODO / Next Tasks:
-#### 1. Add info about charging station availability (available, occupied, out_of_service, maintenance)
-- I would suggest to add an enum "availability" with one out of the 4 possibilities chosen randomly for each charging stations
-#### 2. According to the miro board additions of the professor we shall also show "peak times" of charging stations
-- I would suggest to add an array "peak_times" with a randomized normal distribution to each charging station as mockup
-- The values of availability and peak times shall be applied/updated using an "update_status" function
-#### 3. Cleanup code & commentaries
-#### 4. Implement Unit Tests for all functions
-#### 5. Fix any bugs you might encounter
-#### 6. Draw flowcharts for use case functions and other requested diagrams
+#### 1. Write a documentation
+#### 2. Cleanup code & commentaries
+#### 3. Implement Unit Tests for all functions
+#### 4. Fix any bugs you might encounter
+#### 5. Draw flowcharts for use case functions and other requested diagrams
 
 ---
 
