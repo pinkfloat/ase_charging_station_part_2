@@ -1,9 +1,11 @@
 from dash import Dash, dcc, html, Input, Output, State
 from datetime import datetime
+from enum import Enum
 from flask import session
 from firebase_admin import db
 import pandas as pd
 import plotly.express as px
+import random
 
 def create_dash_app(flask_app):
     """Sets up the Dash app and links it to the Flask app."""
@@ -46,6 +48,7 @@ def create_dash_app(flask_app):
             # If a charging station marker is clicked, the station details are shown
             html.Div([
                 html.Div(id='station-details'),
+                html.Div(id='availability'),
                 html.Div(id='average-rating'),
                 html.Div(id='reviews-list'),
                 html.Div([
@@ -113,6 +116,7 @@ def create_dash_app(flask_app):
     # Callback to display charging station details and reviews when a station is clicked
     @dash_app.callback(
         [Output('station-details', 'children'),
+        Output('availability', 'children'),
         Output('feedback-div', 'style'),
         Output('average-rating', 'children'),
         Output('reviews-list', 'children')],
@@ -137,6 +141,14 @@ def create_dash_app(flask_app):
             
             # Prepare list of reviews to display
             reviews_list = [html.P(f"{review['review_text']} (Rating: {review['review_star']})") for review in station_reviews]
+
+            # Simulate station availability
+            class Status(Enum):
+                AVAILABLE = "available"
+                OCCUPIED = "occupied"
+                OUT_OF_SERVICE = "out of service"
+                MAINTENANCE = "maintenance"
+            random_status = random.choice(list(Status))
             
             return (
                 html.Div([
@@ -146,6 +158,7 @@ def create_dash_app(flask_app):
                     html.P(f"Power: {point_data['customdata'][3]} KW"),
                     html.P(f"PLZ: {point_data['customdata'][4]}"),
                 ]),
+                html.H4(f"Status: {random_status.value}"),
                 {'display': 'block'},
                 html.H4(f"Average Rating: {avg_rating:.2f}"),
                 html.Div(reviews_list)
@@ -157,9 +170,10 @@ def create_dash_app(flask_app):
                     html.P(f"There are {len(df)} charging stations in total."),
                     html.P("Please click on a station to view its details and leave a review.")
                 ]),
+                '', # no availability status
                 {'display': 'none'},
-                '',
-                ''
+                '', # no rating
+                ''  # no revies
             )
 
     # Callback to handle the submission of feedback and ratings for a station
