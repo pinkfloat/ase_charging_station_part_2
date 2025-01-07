@@ -125,34 +125,28 @@ def create_dash_app(flask_app):
         Input('station-map', 'clickData')
     )
     def display_station_details(dataOfClickedStation):
-        """Displays the details of the clicked station, its average rating, and any reviews."""
-        if dataOfClickedStation:
-            point_data = dataOfClickedStation['points'][0]
-            station_id = point_data['customdata'][0]  # Get station ID from clicked data
-            
-            # Fetch reviews for the selected station from the database
-            ratings_ref = db.reference('ratings')
-            all_reviews = ratings_ref.get() or {}
-            station_reviews = [review for review in all_reviews.values() if review['charging_station_id'] == station_id]
-            
-            # Calculate the average rating
+        """
+        Displays the details of the clicked station, its average rating, and any reviews.
+        """
+
+        def calculate_average_rating(station_reviews):
+            """Calculate the average rating based on a list of reviews."""
             if station_reviews:
                 avg_rating = sum(review['review_star'] for review in station_reviews) / len(station_reviews)
             else:
-                avg_rating = 0
-            
-            # Prepare list of reviews to display
-            reviews_list = [html.P(f"{review['review_text']} (Rating: {review['review_star']})") for review in station_reviews]
-
-            # Simulate station availability
+                avg_rating = 0.0
+            return avg_rating
+        
+        def simulate_station_availability():
             class Status(Enum):
                 AVAILABLE = "available"
                 OCCUPIED = "occupied"
                 OUT_OF_SERVICE = "out of service"
                 MAINTENANCE = "maintenance"
             random_status = random.choice(list(Status))
-
-            # Simulate rush hour graph
+            return random_status
+        
+        def simulate_rush_hours():
             time_slots = ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM"]
             random_data = np.random.normal(loc=2.5, scale=1.0, size=len(time_slots))
             random_data = np.clip(random_data, 0, 5) # simulate 0-5 persons per hour
@@ -163,6 +157,24 @@ def create_dash_app(flask_app):
                 yaxis_title='Persons per Hour',
                 template='plotly_white'
             )
+            return bar_chart
+
+        if dataOfClickedStation:
+            point_data = dataOfClickedStation['points'][0]
+            station_id = point_data['customdata'][0]  # Get station ID from clicked data
+            
+            # Fetch reviews for the selected station from the database
+            ratings_ref = db.reference('ratings')
+            all_reviews = ratings_ref.get() or {}
+            station_reviews = [review for review in all_reviews.values() if review['charging_station_id'] == station_id]
+            
+            # Prepare list of reviews to display
+            reviews_list = [html.P(f"{review['review_text']} (Rating: {review['review_star']})") for review in station_reviews]
+
+            # Display average rating, station availability and simulated rush hours
+            avg_rating = calculate_average_rating(station_reviews)
+            random_status = simulate_station_availability()
+            bar_chart = simulate_rush_hours()
             
             return (
                 html.Div([
@@ -190,7 +202,7 @@ def create_dash_app(flask_app):
                 '', # no status
                 {'display': 'none'},
                 '', # no rating
-                ''  # no revies
+                ''  # no reviews
             )
 
     # Callback to handle the submission of feedback and ratings for a station
