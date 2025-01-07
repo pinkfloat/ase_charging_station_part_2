@@ -7,11 +7,9 @@ import hashlib
 import pandas as pd
 import plotly.express as px
 
-
 # Initialize Application
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Used for flashing messages
-
 
 # Initialize Database
 cred = credentials.Certificate("./secret/firebase.json")  # Make sure the secret key is placed here
@@ -33,14 +31,18 @@ dash_app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     dcc.Interval(id='interval-component', interval=1000, n_intervals=0),
 
+    # Show start welcoming text
+    # The user will have the options to login or create a profile from here
     html.Div([
         html.Span(f"Welcome, ", id='welcome-user'),
         html.Span(id='username-display', style={'fontWeight': 'bold'}),
     ], style={'position': 'absolute', 'top': '10px', 'left': '10px'}),
 
+    # The screen after login
     html.H1("Charging Stations", style={'textAlign': 'center'}),
     html.A("Logout", href="/logout", style={'position': 'absolute', 'top': '10px', 'right': '10px'}),
     html.Div([
+        # The charging station search bar (on the top left part of the page)
         html.Div([
             dcc.Input(
                 id='plz-search',
@@ -53,24 +55,23 @@ dash_app.layout = html.Div([
             dcc.Graph(id='station-map', style={'height': '80vh'})
         ], style={'flex': '75%', 'display': 'flex', 'flexDirection': 'column'}),
         
+        # If a charging station marker is clicked, the station details are shown
         html.Div([
-        html.Div(id='station-details'),
-        html.Div(id='average-rating'),
-        html.Div(id='reviews-list'),
-        html.Div([
-            dcc.Slider(id='rating-slider', min=1, max=5, step=1, marks={i: str(i) for i in range(1, 6)}),
-            dcc.Input(
-                id='feedback-input',
-                type='text',
-                placeholder='Leave feedback...',
-                style={'width': '100%', 'margin-bottom': '10px'}
-            ),
-            html.Button('Submit Feedback', id='submit-feedback', n_clicks=0)
-        ], id='feedback-div', style={'display': 'none'}),
-        html.Div(id='feedback-output')
-    ], style={'flex': '25%', 'padding': '20px'})
-
-
+            html.Div(id='station-details'),
+            html.Div(id='average-rating'),
+            html.Div(id='reviews-list'),
+            html.Div([
+                dcc.Slider(id='rating-slider', min=1, max=5, step=1, marks={i: str(i) for i in range(1, 6)}),
+                dcc.Input(
+                    id='feedback-input',
+                    type='text',
+                    placeholder='Leave feedback...',
+                    style={'width': '100%', 'margin-bottom': '10px'}
+                ),
+                html.Button('Submit Feedback', id='submit-feedback', n_clicks=0)
+            ], id='feedback-div', style={'display': 'none'}),
+            html.Div(id='feedback-output')
+        ], style={'flex': '25%', 'padding': '20px'})
     ], style={'display': 'flex'})
 ])
 
@@ -127,10 +128,10 @@ def update_map(n_clicks, current_figure, search_plz):
      Output('reviews-list', 'children')],
     Input('station-map', 'clickData')
 )
-def display_station_details(click_data):
+def display_station_details(dataOfClickedStation):
     """Displays the details of the clicked station, its average rating, and any reviews."""
-    if click_data:
-        point_data = click_data['points'][0]
+    if dataOfClickedStation:
+        point_data = dataOfClickedStation['points'][0]
         station_id = point_data['customdata'][0]  # Get station ID from clicked data
         
         # Fetch reviews for the selected station from the database
@@ -181,14 +182,14 @@ def display_station_details(click_data):
     [State('feedback-input', 'value'),
      State('rating-slider', 'value')]
 )
-def submit_feedback(n_clicks, click_data, feedback, rating):
+def submit_feedback(n_clicks, dataOfClickedStation, feedback, rating):
     """Submits the feedback and rating for the selected station and stores it in the database."""
-    if n_clicks > 0 and feedback and rating and click_data:
+    if n_clicks > 0 and feedback and rating and dataOfClickedStation:
         user_id = session.get('user_id')
         if not user_id:
             return "You need to log in to give a rating.", "", None
         
-        station_id = click_data['points'][0]['customdata'][0]  # Get station ID from clicked data
+        station_id = dataOfClickedStation['points'][0]['customdata'][0]
         
         try:
             # Store the feedback in the Firebase database
@@ -206,16 +207,7 @@ def submit_feedback(n_clicks, click_data, feedback, rating):
     
     return "", "", None
 
-###########  plotly dash app ends here ##############
-
-# Decorator to require login before accessing certain routes
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
+########### plotly dash app ends here ##############
 
 # Function to hash passwords for security
 def hash_password(password):
@@ -291,13 +283,14 @@ def login():
 
     return render_template("LoginPage.html")
 
-# Route to handle user logout
-@app.route("/logout")
-def logout():
-    """Logs the user out by removing user session data."""
-    session.pop('user_id', None)
-    flash("You have been logged out.", "success")
-    return redirect(url_for('login'))
+# Decorator to require login before allowing access to dashboard
+def login_required(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+        return func(*args, **kwargs)
+    return decorated_function
 
 # Route to display the dashboard
 @app.route("/dashboard")
@@ -305,6 +298,14 @@ def logout():
 def dashboard():
     """Renders the dashboard page, which is protected by login."""
     return dash_app.index()
+
+# Route to handle user logout
+@app.route("/logout")
+def logout():
+    """Logs the user out by removing user session data."""
+    session.pop('user_id', None)
+    flash("You have been logged out.", "success")
+    return redirect(url_for('login'))
 
 if __name__ == "__main__":
     app.run(debug=True)
