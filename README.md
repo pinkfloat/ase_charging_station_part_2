@@ -1,11 +1,24 @@
 # ase_charging_station_part_2
 
 ### TODO / Next Tasks:
-#### 1. Write a documentation
-#### 2. Cleanup code & commentaries
-#### 3. Implement Unit Tests for all functions
-#### 4. Fix any bugs you might encounter
-#### 5. Draw flowcharts for use case functions and other requested diagrams
+#### 1. Rewrite code & commentaries
+- Break down functions into smaller testable pieces
+- Sort and organize files and functions in this domain driven way suggested in the `02_Project_Implementation_with_TDD.pdf` in moodle (so we need to find out which functions belong to which domain and will end up in which file)
+- reimplement functions test driven (so tests first, than the code)
+#### 2. Implement Unit Tests for all functions (if possible)
+- Create boundary checks for new user names and passwords
+- Update create user function to only allow user names with more that 3 or 4 symbols
+- Think about other checks to only allow only certain user names (i.e. only names starting with a letter, excluding weird symbols ...) and passwords (i.e. passwords also need a minimum lentgh of 12 and need to have a big letter, small letter, number and special symbol)
+- Verify by unit tests that your criterias for user name and password must be fullfilled when creating a new user
+- A test coverage of 80% must be achieved -> we need to track the coverage (see python package "coverage")
+#### 3. Define similar criteria for charging station commentaries (i.e. not more than 300 symbols or so) and test them
+#### 4. Create a function to allow the deletion of user profiles
+#### 5. Show the username for a submitted rating on the webpage
+#### 6. Implement functionalities for Garima's more enhanced "Create profile" website test driven (Unit tests first, then code)
+- Perhaps throw out a few fields if you consider them "too many" (but keep in mind that this is a good opportunity to raise our coverage percentage and demonstrate a test driven workflow as this is a big requirement in this project work)
+#### 7. Fix any bugs you might encounter (some are documented below)
+#### 8. Draw flowcharts for use case functions and other requested diagrams
+#### 9. Update the project documentation when we finalize our project
 
 ---
 
