@@ -4,4 +4,5 @@ flask
 openpyxl
 pandas
 plotly
+pytest
 geopandas
