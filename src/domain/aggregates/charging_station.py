@@ -28,4 +28,6 @@ class ChargingStation:
         self.ratings.append(rating)
 
     def average_rating(self):
-        return
+        if not self.ratings:
+            return 0.0
+        return sum(rating.value for rating in self.ratings) / len(self.ratings)
