@@ -1,6 +1,7 @@
 # tests/domain/aggregates/test_charging_station.py
 import pytest
 from domain.aggregates.charging_station import ChargingStation
+from domain.entities.rating import Rating
 from domain.value_objects.location import Location
 from domain.value_objects.postal_code import PostalCode
 from domain.value_objects.status import Status
@@ -14,6 +15,9 @@ def valid_postal_code():
 
 def valid_status():
     return Status.AVAILABLE
+
+def valid_rating():
+    return Rating(user_name="user123", value=4)
 
 # Test valid initialization
 def test_charging_station_valid_initialization():
@@ -75,3 +79,37 @@ def test_charging_station_invalid_status_type():
             postal_code=valid_postal_code(),
             status="INVALID_STATUS", # Invalid status
         )
+
+# Test adding a valid rating
+def test_add_valid_rating():
+    station = ChargingStation(
+        station_id="CS123",
+        name="Berlin Charging Station",
+        operator="Green Energy",
+        power=150,
+        location=valid_location(),
+        postal_code=valid_postal_code(),
+        status=valid_status(),
+    )
+
+    rating = valid_rating()
+    station.add_rating(rating)
+
+    # Assert the rating was added successfully
+    assert len(station.ratings) == 1
+    assert station.ratings[0] == rating
+
+# Test adding an invalid rating
+def test_add_invalid_rating():
+    station = ChargingStation(
+        station_id="CS123",
+        name="Berlin Charging Station",
+        operator="Green Energy",
+        power=150,
+        location=valid_location(),
+        postal_code=valid_postal_code(),
+        status=valid_status(),
+    )
+
+    with pytest.raises(ValueError, match="Invalid rating object"):
+        station.add_rating("not_a_rating")  # Invalid input
