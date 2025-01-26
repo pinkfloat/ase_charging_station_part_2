@@ -23,7 +23,9 @@ class ChargingStation:
         self.ratings = []
 
     def add_rating(self, rating):
-        return
+        if not isinstance(rating, Rating):
+            raise ValueError("Invalid rating object")
+        self.ratings.append(rating)
 
     def average_rating(self):
         return
