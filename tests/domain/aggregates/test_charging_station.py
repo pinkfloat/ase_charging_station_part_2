@@ -113,3 +113,58 @@ def test_add_invalid_rating():
 
     with pytest.raises(ValueError, match="Invalid rating object"):
         station.add_rating("not_a_rating")  # Invalid input
+
+
+# Test the average_rating method
+
+# Test when there are no ratings
+def test_average_rating_no_ratings():
+    station = ChargingStation(
+        station_id="CS123",
+        name="Berlin Charging Station",
+        operator="Green Energy",
+        power=150,
+        location=valid_location(),
+        postal_code=valid_postal_code(),
+        status=valid_status(),
+    )
+
+    # Assert that the average is 0.0 when there are no ratings
+    assert station.average_rating() == 0.0
+
+# Test when there is one rating
+def test_average_rating_one_rating():
+    station = ChargingStation(
+        station_id="CS123",
+        name="Berlin Charging Station",
+        operator="Green Energy",
+        power=150,
+        location=valid_location(),
+        postal_code=valid_postal_code(),
+        status=valid_status(),
+    )
+
+    station.add_rating(Rating(user_name="user123", value=5, comment="Great!"))
+
+    # Assert that the average equals the single rating value
+    assert station.average_rating() == 5.0
+
+# Test when there are multiple ratings
+def test_average_rating_multiple_ratings():
+    station = ChargingStation(
+        station_id="CS123",
+        name="Berlin Charging Station",
+        operator="Green Energy",
+        power=150,
+        location=valid_location(),
+        postal_code=valid_postal_code(),
+        status=valid_status(),
+    )
+
+    # Add multiple ratings
+    station.add_rating(Rating(user_name="user1", value=4, comment="Good"))
+    station.add_rating(Rating(user_name="user2", value=3, comment="Okay"))
+    station.add_rating(Rating(user_name="user3", value=5, comment="Excellent"))
+
+    # Assert the average is calculated correctly
+    assert station.average_rating() == pytest.approx((4 + 3 + 5) / 3, 0.001)
