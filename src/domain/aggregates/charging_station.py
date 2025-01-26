@@ -2,6 +2,7 @@
 from domain.entities.rating import Rating
 from domain.value_objects.location import Location
 from domain.value_objects.postal_code import PostalCode
+from domain.value_objects.status import Status
 
 class ChargingStation:
     def __init__(self, station_id, name, operator, power, location, postal_code, status):
