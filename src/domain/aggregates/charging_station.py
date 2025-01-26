@@ -6,6 +6,13 @@ from domain.value_objects.status import Status
 
 class ChargingStation:
     def __init__(self, station_id, name, operator, power, location, postal_code, status):
+        if not isinstance(location, Location):
+            raise TypeError("location must be an instance of Location")
+        if not isinstance(postal_code, PostalCode):
+            raise TypeError("postal_code must be an instance of PostalCode")
+        if not isinstance(status, Status):
+            raise TypeError("status must be an instance of Status")
+        
         self.station_id = station_id
         self.name = name
         self.operator = operator
