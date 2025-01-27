@@ -48,12 +48,12 @@ def test_load_from_database(mock_firebase_admin):
     # Check the user attributes
     assert users[0].id == "user_1"
     assert users[0].name == "test_user"
-    assert users[0].password == hashlib.sha256("secure_password".encode()).hexdigest()
+    assert users[0].password == repo.hash_password("secure_password")
     assert users[0].date_joined == "2023-01-01T12:00:00"
 
     assert users[1].id == "user_2"
     assert users[1].name == "another_user"
-    assert users[1].password == hashlib.sha256("another_password".encode()).hexdigest()
+    assert users[1].password == repo.hash_password("another_password")
     assert users[1].date_joined == "2024-01-01T12:00:00"
 
 def test_load_from_empty_database(mock_firebase_admin):

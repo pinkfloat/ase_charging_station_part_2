@@ -1,6 +1,8 @@
 # src/infrastructure/repositories/user_repository.py
 from firebase_admin import credentials, initialize_app, db
 from domain.aggregates.user import User
+from datetime import datetime
+import hashlib
 
 class UserRepository:
     def __init__(self, firebase_secret_json):
@@ -33,6 +35,9 @@ class UserRepository:
             if user.name == username:
                 return True
         return False
+    
+    def hash_password(self, password):
+        return hashlib.sha256(password.encode()).hexdigest()
 
-    def create_user(self, name, password):
+    def create_user(self, username, password):
         return
