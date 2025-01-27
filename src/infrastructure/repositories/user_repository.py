@@ -49,4 +49,33 @@ class UserRepository:
         return f"user_{max_id + 1}"
 
     def create_user(self, username, password):
-        return
+        """Creates a new user and saves it to the database."""
+        # Input validation
+        if not username.strip():
+            raise ValueError("Username cannot be empty.")
+        if not password.strip():
+            raise ValueError("Password cannot be empty.")
+        
+        # Ensure username is unique
+        if self.check_if_username_exists(username):
+            raise ValueError("Username already exists. Please choose another.")
+
+        # Generate next user ID
+        user_id = self.get_next_user_id()
+
+        # Create new user
+        user = User(
+            id=user_id,
+            name=username.strip(),
+            password=self.hash_password(password.strip()),
+            date_joined=datetime.now().isoformat()
+        )
+        self.users.append(user)
+
+        # Save user to the database
+        self.users_ref.child(user.id).set({
+            "username": user.name,
+            "password": user.password,
+            "date_joined": user.date_joined
+        })
+        return user

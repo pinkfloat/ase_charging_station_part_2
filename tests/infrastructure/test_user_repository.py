@@ -90,3 +90,46 @@ def test_get_next_user_id(mock_firebase_admin):
     # Test the next user ID generation
     next_id = repo.get_next_user_id()
     assert next_id == "user_11"
+
+def test_create_user(mock_firebase_admin):
+    _, mock_ref = mock_firebase_admin
+
+    # Initialize repository with mock data
+    repo = UserRepository("mocked/path/to/secret/firebase.json")
+    repo.load_from_database()
+
+    # Create a new user
+    new_user = repo.create_user("another_another_user", "very_secure_password")
+
+    # Verify the new user was created correctly
+    assert new_user.id == "user_3"
+    assert new_user.name == "another_another_user"
+    assert new_user.password == repo.hash_password("very_secure_password")
+    assert new_user in repo.users
+
+    # Verify that the user was saved to Firebase
+    mock_ref.child.assert_called_with(new_user.id)
+    mock_ref.child(new_user.id).set.assert_called_with({
+        "username": "another_another_user",
+        "password": repo.hash_password("very_secure_password"),
+        "date_joined": new_user.date_joined
+    })
+
+def test_create_user_validation(mock_firebase_admin):
+    _, _ = mock_firebase_admin
+
+    # Initialize repository
+    repo = UserRepository("mocked/path/to/secret/firebase.json")
+    repo.load_from_database()
+
+    # Test empty username
+    with pytest.raises(ValueError, match="Username cannot be empty."):
+        repo.create_user("", "secure_password")
+
+    # Test empty password
+    with pytest.raises(ValueError, match="Password cannot be empty."):
+        repo.create_user("new_user", "")
+
+    # Test duplicate username
+    with pytest.raises(ValueError, match="Username already exists. Please choose another."):
+        repo.create_user("test_user", "some_password")
