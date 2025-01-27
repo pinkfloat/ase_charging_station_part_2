@@ -38,6 +38,15 @@ class UserRepository:
     
     def hash_password(self, password):
         return hashlib.sha256(password.encode()).hexdigest()
+    
+    def get_next_user_id(self):
+        """Finds the highest existing user ID and generates the next one."""
+        max_id = 0
+        for user in self.users:
+            # Extract the numeric part of the user ID
+            user_id_number = int(user.id.split("_")[1])
+            max_id = max(max_id, user_id_number)
+        return f"user_{max_id + 1}"
 
     def create_user(self, username, password):
         return

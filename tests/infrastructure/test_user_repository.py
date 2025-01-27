@@ -75,3 +75,18 @@ def test_check_if_username_exists(mock_firebase_admin):
     
     # Test for non-existing username
     assert repo.check_if_username_exists("non_existing_user") is False
+
+def test_get_next_user_id(mock_firebase_admin):
+    _, _ = mock_firebase_admin
+
+    # Initialize repository with mock data
+    repo = UserRepository("mocked/path/to/secret/firebase.json")
+    repo.load_from_database()
+
+    # Add mock users
+    repo.users.append(User(id="user_3", name="user3", password="abcdefghijkl", date_joined="2023-01-01T12:00:00"))
+    repo.users.append(User(id="user_10", name="user10", password="abcdefghijkl", date_joined="2023-01-01T12:00:00"))
+
+    # Test the next user ID generation
+    next_id = repo.get_next_user_id()
+    assert next_id == "user_11"
