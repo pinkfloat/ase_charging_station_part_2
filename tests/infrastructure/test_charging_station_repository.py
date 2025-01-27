@@ -27,18 +27,13 @@ def test_get_random_status(repository):
 
 
 # Test valid csv entries
-
-# Mock CSV data for testing
-@pytest.fixture
-def mock_csv_data():
+def test_load_from_csv_valid(repository):
     csv_data = """stationID,stationName,stationOperator,KW,Latitude,Longitude,PLZ
 1,Station A,Operator X,50.0,52.60806,13.3044,13467
 2,Station B,Operator Y,100.0,52.6117,13.30914,13467
 3,Station C,Operator Z,75.0,52.61259,13.30969,13467
 """
-    return StringIO(csv_data)
-
-def test_load_from_csv(repository, mock_csv_data):
+    mock_csv_data = StringIO(csv_data)
     stations = repository.load_from_csv(mock_csv_data)
 
     # Assert that the returned list is not empty
