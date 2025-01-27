@@ -1,5 +1,6 @@
 # tests/domain/aggregates/test_charging_station.py
 import pytest
+import numpy as np
 from domain.aggregates.charging_station import ChargingStation
 from domain.entities.rating import Rating
 from domain.value_objects.location import Location
@@ -19,6 +20,9 @@ def valid_status():
 def valid_rating():
     return Rating(user_name="user123", value=4)
 
+def valid_rush_hour_data():
+    return np.zeros(10)
+
 # Test valid initialization
 def test_charging_station_valid_initialization():
 
@@ -30,6 +34,7 @@ def test_charging_station_valid_initialization():
         location=valid_location(),
         postal_code=valid_postal_code(),
         status=valid_status(),
+        rush_hour_data=valid_rush_hour_data(),
     )
 
     assert station.station_id == 1
@@ -52,6 +57,7 @@ def test_charging_station_invalid_station_id_type():
             location=valid_location(),
             postal_code=valid_postal_code(),
             status=valid_status(),
+            rush_hour_data=valid_rush_hour_data(),
         )
 
 # Test invalid power type
@@ -65,6 +71,7 @@ def test_charging_station_invalid_power_type():
             location=valid_location(),
             postal_code=valid_postal_code(),
             status=valid_status(),
+            rush_hour_data=valid_rush_hour_data(),
         )
 
 # Test invalid location type
@@ -78,6 +85,7 @@ def test_charging_station_invalid_location_type():
             location="invalid", # Invalid location
             postal_code=valid_postal_code(),
             status=valid_status(),
+            rush_hour_data=valid_rush_hour_data(),
         )
 
 # Test invalid postal_code type
@@ -91,6 +99,7 @@ def test_charging_station_invalid_postal_code_type():
             location=valid_location(),
             postal_code="12345", # Invalid postal code
             status=valid_status(),
+            rush_hour_data=valid_rush_hour_data(),
         )
 
 # Test invalid status type
@@ -104,6 +113,21 @@ def test_charging_station_invalid_status_type():
             location=valid_location(),
             postal_code=valid_postal_code(),
             status="INVALID_STATUS", # Invalid status
+            rush_hour_data=valid_rush_hour_data(),
+        )
+
+# Test invalid rush_hour_data type
+def test_charging_station_invalid_rush_hour_data_type():
+    with pytest.raises(TypeError, match="rush_hour_data must be a numpy array"):
+        ChargingStation(
+            station_id=1,
+            name="Supercharger",
+            operator="Tesla",
+            power=150,
+            location=valid_location(),
+            postal_code=valid_postal_code(),
+            status=valid_status(),
+            rush_hour_data="INVALID_DATA", # Invalid rush hour data
         )
 
 # Test adding a valid rating
@@ -116,6 +140,7 @@ def test_add_valid_rating():
         location=valid_location(),
         postal_code=valid_postal_code(),
         status=valid_status(),
+        rush_hour_data=valid_rush_hour_data(),
     )
 
     rating = valid_rating()
@@ -135,6 +160,7 @@ def test_add_invalid_rating():
         location=valid_location(),
         postal_code=valid_postal_code(),
         status=valid_status(),
+        rush_hour_data=valid_rush_hour_data(),
     )
 
     with pytest.raises(ValueError, match="Invalid rating object"):
@@ -153,6 +179,7 @@ def test_average_rating_no_ratings():
         location=valid_location(),
         postal_code=valid_postal_code(),
         status=valid_status(),
+        rush_hour_data=valid_rush_hour_data(),
     )
 
     # Assert that the average is 0.0 when there are no ratings
@@ -168,6 +195,7 @@ def test_average_rating_one_rating():
         location=valid_location(),
         postal_code=valid_postal_code(),
         status=valid_status(),
+        rush_hour_data=valid_rush_hour_data(),
     )
 
     station.add_rating(Rating(user_name="user123", value=5, comment="Great!"))
@@ -185,6 +213,7 @@ def test_average_rating_multiple_ratings():
         location=valid_location(),
         postal_code=valid_postal_code(),
         status=valid_status(),
+        rush_hour_data=valid_rush_hour_data(),
     )
 
     # Add multiple ratings

@@ -1,11 +1,12 @@
 # src/domain/aggregates/charging_station.py
+import numpy as np
 from domain.entities.rating import Rating
 from domain.value_objects.location import Location
 from domain.value_objects.postal_code import PostalCode
 from domain.value_objects.status import Status
 
 class ChargingStation:
-    def __init__(self, station_id, name, operator, power, location, postal_code, status):
+    def __init__(self, station_id, name, operator, power, location, postal_code, status, rush_hour_data):
         if not isinstance(location, Location):
             raise TypeError("location must be an instance of Location")
         if not isinstance(postal_code, PostalCode):
@@ -16,6 +17,8 @@ class ChargingStation:
             raise TypeError("power must be a float or an int")
         if not isinstance(station_id, int):
             raise TypeError("station_id must be an int")
+        if not isinstance(rush_hour_data, np.ndarray):
+            raise TypeError("rush_hour_data must be a numpy array")
         
         self.station_id = station_id
         self.name = name
@@ -24,6 +27,7 @@ class ChargingStation:
         self.location = location
         self.postal_code = postal_code
         self.status = status
+        self.rush_hour_data = rush_hour_data
         self.ratings = []
 
     def add_rating(self, rating):
