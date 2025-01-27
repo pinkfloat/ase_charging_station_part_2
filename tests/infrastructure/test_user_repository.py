@@ -64,3 +64,14 @@ def test_load_from_empty_database(mock_firebase_admin):
     
     # Ensure no users are loaded
     assert len(users) == 0 
+
+def test_check_if_username_exists(mock_firebase_admin):
+    _, _ = mock_firebase_admin
+    repo = UserRepository("mocked/path/to/secret/firebase.json")
+    repo.load_from_database()  # Load mocked users
+    
+    # Test for existing username
+    assert repo.check_if_username_exists("test_user") is True
+    
+    # Test for non-existing username
+    assert repo.check_if_username_exists("non_existing_user") is False
