@@ -27,8 +27,12 @@ class UserRepository:
             self.users.append(user)
         return self.users
 
-    def check_if_username_exists(self, name):
-        return
+    def check_if_username_exists(self, username):
+        """Checks if a username exists in the database."""
+        for user in self.users:
+            if user.name == username:
+                return True
+        return False
 
     def create_user(self, name, password):
         return
