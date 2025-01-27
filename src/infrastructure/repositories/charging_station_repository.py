@@ -7,6 +7,8 @@ from domain.value_objects.postal_code import PostalCode
 from domain.value_objects.status import Status
 
 class ChargingStationRepository:
+    REQUIRED_COLUMNS = ['stationID', 'stationName', 'stationOperator', 'KW', 'Latitude', 'Longitude', 'PLZ']
+
     def __init__(self):
         self.stations = []
     
@@ -15,8 +17,14 @@ class ChargingStationRepository:
         return random_status
 
     def load_from_csv(self, csv_file):
-        df = pd.read_csv(csv_file, usecols=['stationID', 'stationName', 'stationOperator', 'KW', 'Latitude', 'Longitude', 'PLZ'])
+        df = pd.read_csv(csv_file)
 
+        # Validate that all required columns are present
+        missing_columns = [col for col in self.REQUIRED_COLUMNS if col not in df.columns]
+        if missing_columns:
+            raise ValueError(f"Missing required columns: {', '.join(missing_columns)}")
+
+        # Process the rows to create ChargingStation objects
         for _, row in df.iterrows():
             location = Location(latitude=row['Latitude'], longitude=row['Longitude'])
             postal_code = PostalCode(row['PLZ'])
