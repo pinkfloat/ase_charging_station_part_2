@@ -12,6 +12,10 @@ class ChargingStation:
             raise TypeError("postal_code must be an instance of PostalCode")
         if not isinstance(status, Status):
             raise TypeError("status must be an instance of Status")
+        if not isinstance(power, (int, float)):
+            raise TypeError("power must be a float or an int")
+        if not isinstance(station_id, int):
+            raise TypeError("station_id must be an int")
         
         self.station_id = station_id
         self.name = name

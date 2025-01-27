@@ -41,6 +41,32 @@ def test_charging_station_valid_initialization():
     assert isinstance(station.status, Status)
     assert station.ratings == []
 
+# Test invalid station_id type
+def test_charging_station_invalid_station_id_type():
+    with pytest.raises(TypeError, match="station_id must be an int"):
+        ChargingStation(
+            station_id="invalid",  # Invalid station_id type
+            name="Supercharger",
+            operator="Tesla",
+            power=150,
+            location=valid_location(),
+            postal_code=valid_postal_code(),
+            status=valid_status(),
+        )
+
+# Test invalid power type
+def test_charging_station_invalid_power_type():
+    with pytest.raises(TypeError, match="power must be a float or an int"):
+        ChargingStation(
+            station_id=1,
+            name="Supercharger",
+            operator="Tesla",
+            power="invalid",  # Invalid power type
+            location=valid_location(),
+            postal_code=valid_postal_code(),
+            status=valid_status(),
+        )
+
 # Test invalid location type
 def test_charging_station_invalid_location_type():
     with pytest.raises(TypeError, match="location must be an instance of Location"):
@@ -83,7 +109,7 @@ def test_charging_station_invalid_status_type():
 # Test adding a valid rating
 def test_add_valid_rating():
     station = ChargingStation(
-        station_id="CS123",
+        station_id=1,
         name="Berlin Charging Station",
         operator="Green Energy",
         power=150,
@@ -102,7 +128,7 @@ def test_add_valid_rating():
 # Test adding an invalid rating
 def test_add_invalid_rating():
     station = ChargingStation(
-        station_id="CS123",
+        station_id=2,
         name="Berlin Charging Station",
         operator="Green Energy",
         power=150,
@@ -120,7 +146,7 @@ def test_add_invalid_rating():
 # Test when there are no ratings
 def test_average_rating_no_ratings():
     station = ChargingStation(
-        station_id="CS123",
+        station_id=3,
         name="Berlin Charging Station",
         operator="Green Energy",
         power=150,
@@ -135,7 +161,7 @@ def test_average_rating_no_ratings():
 # Test when there is one rating
 def test_average_rating_one_rating():
     station = ChargingStation(
-        station_id="CS123",
+        station_id=4,
         name="Berlin Charging Station",
         operator="Green Energy",
         power=150,
@@ -152,7 +178,7 @@ def test_average_rating_one_rating():
 # Test when there are multiple ratings
 def test_average_rating_multiple_ratings():
     station = ChargingStation(
-        station_id="CS123",
+        station_id=5,
         name="Berlin Charging Station",
         operator="Green Energy",
         power=150,
