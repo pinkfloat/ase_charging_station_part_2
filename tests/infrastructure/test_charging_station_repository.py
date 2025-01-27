@@ -8,6 +8,26 @@ from domain.value_objects.location import Location
 from domain.value_objects.postal_code import PostalCode
 from domain.value_objects.status import Status
 
+@pytest.fixture
+def repository():
+    return ChargingStationRepository()
+
+def test_get_random_status(repository):
+    # Collect multiple random statuses
+    statuses = [repository.get_random_status() for _ in range(100)]
+
+    # Assert that all returned statuses are instances of Status
+    assert all(isinstance(status, Status) for status in statuses)
+
+    # Assert that all possible Status values are represented in the random sample
+    possible_statuses = set(Status)
+    observed_statuses = set(statuses)
+    assert observed_statuses.issubset(possible_statuses)
+    assert len(observed_statuses) > 1  # Ensure randomness
+
+
+# Test valid csv entries
+
 # Mock CSV data for testing
 @pytest.fixture
 def mock_csv_data():
@@ -17,10 +37,6 @@ def mock_csv_data():
 3,Station C,Operator Z,75.0,52.61259,13.30969,13467
 """
     return StringIO(csv_data)
-
-@pytest.fixture
-def repository():
-    return ChargingStationRepository()
 
 def test_load_from_csv(repository, mock_csv_data):
     stations = repository.load_from_csv(mock_csv_data)
@@ -51,16 +67,13 @@ def test_load_from_csv(repository, mock_csv_data):
     assert station.location.longitude == 13.3044
     assert station.postal_code.plz == "13467"
 
+# Test invalid csv entry: Missing column
+def test_load_from_csv_missing_columns(repository):
+    csv_data = """stationID,stationName,KW,Latitude,Longitude
+1,Station A,50.0,52.60806,13.3044
+2,Station B,100.0,52.6117,13.30914
+"""
+    mock_csv_data = StringIO(csv_data)
 
-def test_get_random_status(repository):
-    # Collect multiple random statuses
-    statuses = [repository.get_random_status() for _ in range(100)]
-
-    # Assert that all returned statuses are instances of Status
-    assert all(isinstance(status, Status) for status in statuses)
-
-    # Assert that all possible Status values are represented in the random sample
-    possible_statuses = set(Status)
-    observed_statuses = set(statuses)
-    assert observed_statuses.issubset(possible_statuses)
-    assert len(observed_statuses) > 1  # Ensure randomness
+    with pytest.raises(ValueError, match="Missing required columns: stationOperator, PLZ"):
+        repository.load_from_csv(mock_csv_data)
