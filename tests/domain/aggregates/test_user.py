@@ -1,6 +1,5 @@
 # tests/domain/aggregates/test_user.py
 import pytest
-import hashlib
 from datetime import datetime
 from domain.aggregates.user import User
 
@@ -16,7 +15,6 @@ class TestUser:
         assert user.id == user_id
         assert user.name == name
         assert user.password == "abcdefgh"
-        assert user.hash_password() == hashlib.sha256(password.encode()).hexdigest()
         assert user.date_joined == date_joined
     
     def test_invalid_user_id(self):

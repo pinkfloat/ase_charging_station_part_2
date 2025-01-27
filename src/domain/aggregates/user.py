@@ -1,5 +1,4 @@
 # src/domain/aggregates/user.py
-import hashlib
 import re
 from datetime import datetime
 
@@ -20,6 +19,3 @@ class User:
         self.name = name
         self.password = password
         self.date_joined = date_joined
-    
-    def hash_password(self):
-        return hashlib.sha256(self.password.encode()).hexdigest()
