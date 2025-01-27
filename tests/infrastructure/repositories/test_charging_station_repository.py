@@ -1,4 +1,4 @@
-# tests/infrastructure/test_charging_station_repository.py
+# tests/infrastructure/repositories/test_charging_station_repository.py
 import pytest
 import pandas as pd
 from io import StringIO
