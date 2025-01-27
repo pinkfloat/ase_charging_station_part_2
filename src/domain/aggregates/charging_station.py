@@ -1,12 +1,13 @@
 # src/domain/aggregates/charging_station.py
 import numpy as np
+from domain.events.rating_added_event import RatingAddedEvent
 from domain.entities.rating import Rating
 from domain.value_objects.location import Location
 from domain.value_objects.postal_code import PostalCode
 from domain.value_objects.status import Status
 
 class ChargingStation:
-    def __init__(self, station_id, name, operator, power, location, postal_code, status, rush_hour_data):
+    def __init__(self, station_id, name, operator, power, location, postal_code, status, rush_hour_data, event_publisher=None):
         if not isinstance(location, Location):
             raise TypeError("location must be an instance of Location")
         if not isinstance(postal_code, PostalCode):
@@ -19,7 +20,7 @@ class ChargingStation:
             raise TypeError("station_id must be an int")
         if not isinstance(rush_hour_data, np.ndarray):
             raise TypeError("rush_hour_data must be a numpy array")
-        
+
         self.station_id = station_id
         self.name = name
         self.operator = operator
@@ -30,10 +31,21 @@ class ChargingStation:
         self.rush_hour_data = rush_hour_data
         self.ratings = []
 
+        # Dependency injection for event publisher
+        self.event_publisher = event_publisher or (lambda event: None)
+
+    def publish_event(self, event):
+        """Publishes an event using the injected publisher (i.e. flash)."""
+        self.event_publisher(event)
+
     def add_rating(self, rating):
         if not isinstance(rating, Rating):
             raise ValueError("Invalid rating object")
         self.ratings.append(rating)
+
+        # Create a RatingAddedEvent and publish it
+        event = RatingAddedEvent(station_id=self.station_id, rating=rating)
+        self.publish_event(event)
 
     def average_rating(self):
         if not self.ratings:

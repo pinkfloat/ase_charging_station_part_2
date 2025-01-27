@@ -1,8 +1,10 @@
 # tests/domain/aggregates/test_charging_station.py
 import pytest
 import numpy as np
+from unittest.mock import Mock
 from domain.aggregates.charging_station import ChargingStation
 from domain.entities.rating import Rating
+from domain.events.rating_added_event import RatingAddedEvent
 from domain.value_objects.location import Location
 from domain.value_objects.postal_code import PostalCode
 from domain.value_objects.status import Status
@@ -223,3 +225,23 @@ def test_average_rating_multiple_ratings():
 
     # Assert the average is calculated correctly
     assert station.average_rating() == pytest.approx((4 + 3 + 5) / 3, 0.001)
+
+def test_publish_event():
+    mock_event_publisher = Mock()
+    station = ChargingStation(
+        station_id=6,
+        name="Berlin Charging Station",
+        operator="Green Energy",
+        power=150,
+        location=valid_location(),
+        postal_code=valid_postal_code(),
+        status=valid_status(),
+        rush_hour_data=valid_rush_hour_data(),
+        event_publisher=mock_event_publisher,
+    )
+
+    rating = Rating(user_name="test_user", value=5, comment="Great station!")
+    test_event = RatingAddedEvent(station_id=station.station_id, rating=rating)
+    station.publish_event(test_event)
+
+    mock_event_publisher.assert_called_once_with(test_event)
