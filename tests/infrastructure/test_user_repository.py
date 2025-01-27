@@ -1,6 +1,7 @@
 # tests/infrastructure/repositories/test_user_repository.py
 import pytest
 import hashlib
+from datetime import datetime
 from unittest.mock import patch, MagicMock
 from infrastructure.repositories.user_repository import UserRepository
 from domain.aggregates.user import User
@@ -92,44 +93,76 @@ def test_get_next_user_id(mock_firebase_admin):
     assert next_id == "user_11"
 
 def test_create_user(mock_firebase_admin):
-    _, mock_ref = mock_firebase_admin
-
-    # Initialize repository with mock data
+    _, _ = mock_firebase_admin
+    
+    # Initialize repository
     repo = UserRepository("mocked/path/to/secret/firebase.json")
-    repo.load_from_database()
+    
+    # Create a user
+    user_id = "user_123"
+    username = "some_user"
+    password = "random_password"
+    user = repo.create_user(user_id, username, password)
+    
+    # Verify the user object
+    assert isinstance(user, User)
+    assert user.id == user_id
+    assert user.name == username.strip()
+    assert user.password == hashlib.sha256(password.strip().encode()).hexdigest()
+    assert datetime.fromisoformat(user.date_joined)  # Ensure date is valid ISO format
 
-    # Create a new user
-    new_user = repo.create_user("another_another_user", "very_secure_password")
-
-    # Verify the new user was created correctly
-    assert new_user.id == "user_3"
-    assert new_user.name == "another_another_user"
-    assert new_user.password == repo.hash_password("very_secure_password")
-    assert new_user in repo.users
-
-    # Verify that the user was saved to Firebase
-    mock_ref.child.assert_called_with(new_user.id)
-    mock_ref.child(new_user.id).set.assert_called_with({
-        "username": "another_another_user",
-        "password": repo.hash_password("very_secure_password"),
-        "date_joined": new_user.date_joined
-    })
-
-def test_create_user_validation(mock_firebase_admin):
+def test_save_to_repo(mock_firebase_admin):
     _, _ = mock_firebase_admin
 
     # Initialize repository
     repo = UserRepository("mocked/path/to/secret/firebase.json")
-    repo.load_from_database()
+    
+    # Create a user and save to repo
+    user = User("user_123", "some_user", "random_password", "2023-01-01T12:00:00")
+    repo.save_to_repo(user)
+    
+    # Verify the user is added to the repo's users list
+    assert len(repo.users) == 1
+    assert repo.users[0] == user
 
-    # Test empty username
-    with pytest.raises(ValueError, match="Username cannot be empty."):
-        repo.create_user("", "secure_password")
+def test_save_to_repo_invalid_user(mock_firebase_admin):
+    _, _ = mock_firebase_admin
 
-    # Test empty password
-    with pytest.raises(ValueError, match="Password cannot be empty."):
-        repo.create_user("new_user", "")
+    # Initialize repository
+    repo = UserRepository("mocked/path/to/secret/firebase.json")
+    
+    # Attempt to save an invalid user
+    with pytest.raises(ValueError, match="Invalid user object"):
+        repo.save_to_repo("not_a_user_object")
 
-    # Test duplicate username
-    with pytest.raises(ValueError, match="Username already exists. Please choose another."):
-        repo.create_user("test_user", "some_password")
+def test_save_to_database(mock_firebase_admin):
+    _, mock_ref = mock_firebase_admin
+
+    # Initialize repository
+    repo = UserRepository("mocked/path/to/secret/firebase.json")
+    
+    # Create a user and save to database
+    user = User("user_123", "some_user", "random_password", "2023-01-01T12:00:00")
+    repo.save_to_database(user)
+    
+    # Verify the Firebase database set call
+    mock_ref.child.assert_called_once_with("user_123")
+    mock_ref.child().set.assert_called_once_with({
+        "username": "some_user",
+        "password": "random_password",
+        "date_joined": "2023-01-01T12:00:00"
+    })
+
+def test_hash_password(mock_firebase_admin):
+    _, _ = mock_firebase_admin
+
+    # Initialize repository
+    repo = UserRepository("mocked/path/to/secret/firebase.json")
+    
+    # Hash a password
+    password = "secure_password"
+    hashed = repo.hash_password(password)
+    
+    # Verify the hash
+    expected_hash = hashlib.sha256(password.encode()).hexdigest()
+    assert hashed == expected_hash
