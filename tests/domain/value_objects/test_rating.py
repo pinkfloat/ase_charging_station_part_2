@@ -1,53 +1,56 @@
 # tests/domain/value_objects/test_rating.py
 import pytest
+from datetime import datetime
 from domain.value_objects.rating import Rating
 
-# Test valid initialization
-def test_rating_valid():
-    # Valid rating between 1 and 5
-    rating = Rating("John Doe", 3)
-    assert rating.user_name == "John Doe"
+def test_rating_valid_inputs():
+    rating = Rating(user_id="user_123", station_id=1, date="2023-01-01", value=5, comment="Great station!")
+    assert rating.user_id == "user_123"
+    assert rating.station_id == 1
+    assert rating.date == "2023-01-01"
+    assert rating.value == 5
+    assert rating.comment == "Great station!"
+
+def test_rating_valid_inputs_without_comment():
+    rating = Rating(user_id="user_456", station_id=2, date="2023-01-02", value=3)
+    assert rating.user_id == "user_456"
+    assert rating.station_id == 2
+    assert rating.date == "2023-01-02"
     assert rating.value == 3
     assert rating.comment == ""
 
-def test_rating_boundary_lower():
-    # Test the lower boundary value (1)
-    rating = Rating("Jane Doe", 1)
-    assert rating.user_name == "Jane Doe"
-    assert rating.value == 1
-    assert rating.comment == ""
+def test_invalid_user_id_format():
+    with pytest.raises(ValueError, match="Invalid user ID format"):
+        Rating(user_id="invalid_user", station_id=1, date="2023-01-01", value=5)
 
-def test_rating_boundary_upper():
-    # Test the upper boundary value (5)
-    rating = Rating("Alice", 5)
-    assert rating.user_name == "Alice"
-    assert rating.value == 5
-    assert rating.comment == ""
+def test_invalid_station_id_type():
+    with pytest.raises(TypeError, match="station_id must be an int"):
+        Rating(user_id="user_123", station_id="station_1", date="2023-01-01", value=5)
 
-def test_rating_with_comment():
-    # Test valid rating with comment
-    rating = Rating("Bob", 4, "Great station!")
-    assert rating.user_name == "Bob"
-    assert rating.value == 4
-    assert rating.comment == "Great station!"
-
-# Test invalid rating values
-def test_rating_invalid_too_low():
-    # Test rating value lower than 1 (e.g., 0)
-    with pytest.raises(ValueError, match="Rating must be between 1 and 5"):
-        Rating("Bob", 0)
-
-def test_rating_invalid_too_high():
-    # Test rating value higher than 5 (e.g., 6)
-    with pytest.raises(ValueError, match="Rating must be between 1 and 5"):
-        Rating("Charlie", 6)
-
-def test_rating_invalid_non_integer():
-    # Test with a non-integer value
+def test_invalid_rating_type():
     with pytest.raises(ValueError, match="Rating must be an integer"):
-        Rating("Dave", 3.5)  # Assuming ratings should be integers 
+        Rating(user_id="user_123", station_id=1, date="2023-01-01", value="5")
 
-def test_rating_invalid_comment():
-    # Test invalid comment (non-string)
+def test_rating_out_of_range_low():
+    with pytest.raises(ValueError, match="Rating must be between 1 and 5"):
+        Rating(user_id="user_123", station_id=1, date="2023-01-01", value=0)
+
+def test_rating_out_of_range_high():
+    with pytest.raises(ValueError, match="Rating must be between 1 and 5"):
+        Rating(user_id="user_123", station_id=1, date="2023-01-01", value=6)
+
+def test_invalid_comment_type():
     with pytest.raises(ValueError, match="Comment must be a string"):
-        Rating(user_name="user123", value=3, comment=123)
+        Rating(user_id="user_123", station_id=1, date="2023-01-01", value=5, comment=123)
+
+def test_invalid_date_format():
+    with pytest.raises(ValueError, match="Date must be in ISO 8601 format"):
+        Rating(user_id="user_123", station_id=1, date="01-01-2023", value=5)
+
+def test_invalid_date_non_iso_format():
+    with pytest.raises(ValueError, match="Date must be in ISO 8601 format"):
+        Rating(user_id="user_123", station_id=1, date="2023/01/01", value=5)
+
+def test_valid_date_with_iso_format():
+    rating = Rating(user_id="user_123", station_id=1, date="2023-05-20", value=4)
+    assert rating.date == "2023-05-20"

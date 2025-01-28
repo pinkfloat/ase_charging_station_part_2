@@ -21,7 +21,7 @@ def valid_status():
     return Status.AVAILABLE
 
 def valid_rating():
-    return Rating(user_name="user123", value=4)
+    return Rating(user_id="user_123", station_id=1, date="2023-01-01", value=5, comment="Great station!")
 
 def valid_rush_hour_data():
     return RushHours(["6 AM", "7 AM", "8 AM", "9 AM"], [2.5, 3.0, 4.5, 1.0])
@@ -201,7 +201,7 @@ def test_average_rating_one_rating():
         rush_hour_data=valid_rush_hour_data(),
     )
 
-    station.add_rating(Rating(user_name="user123", value=5, comment="Great!"))
+    station.add_rating(Rating(user_id="user_123", station_id=1, date="2023-01-01", value=5, comment="Great!"))
 
     # Assert that the average equals the single rating value
     assert station.average_rating() == 5.0
@@ -220,9 +220,9 @@ def test_average_rating_multiple_ratings():
     )
 
     # Add multiple ratings
-    station.add_rating(Rating(user_name="user1", value=4, comment="Good"))
-    station.add_rating(Rating(user_name="user2", value=3, comment="Okay"))
-    station.add_rating(Rating(user_name="user3", value=5, comment="Excellent"))
+    station.add_rating(Rating(user_id="user_1", station_id=1, date="2023-01-01", value=4, comment="Good"))
+    station.add_rating(Rating(user_id="user_2", station_id=1, date="2023-01-01", value=3, comment="Okay"))
+    station.add_rating(Rating(user_id="user_3", station_id=1, date="2023-01-01", value=5, comment="Excellent"))
 
     # Assert the average is calculated correctly
     assert station.average_rating() == pytest.approx((4 + 3 + 5) / 3, 0.001)
@@ -241,7 +241,7 @@ def test_publish_event():
         event_publisher=mock_event_publisher,
     )
 
-    rating = Rating(user_name="test_user", value=5, comment="Great station!")
+    rating = Rating(user_id="user_15", station_id=8, date="2023-01-01", value=5, comment="Great station!")
     test_event = RatingAddedEvent(station_id=station.station_id, rating=rating)
     station.publish_event(test_event)
 
