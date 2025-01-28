@@ -1,5 +1,6 @@
 # src/infrastructure/repositories/charging_station_repository.py
 import pandas as pd
+from datetime import datetime
 from firebase_admin import credentials, initialize_app, db
 from domain.aggregates.charging_station import ChargingStation
 from domain.value_objects.location import Location
@@ -36,6 +37,17 @@ class ChargingStationRepository:
             )
             self.station_ratings.append(rating)
         return self.station_ratings
+
+    def create_rating(self, user_id, station_id, value, comment):
+        """Generates a new rating object."""
+        rating = Rating(
+            user_id=user_id,
+            station_id=station_id,
+            date=datetime.now().isoformat(),
+            value=value,
+            comment=comment
+        )
+        return rating
 
     def load_stations_from_csv(self, csv_file):
         df = pd.read_csv(csv_file)
