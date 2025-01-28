@@ -114,6 +114,14 @@ def test_save_rating_to_repo(mock_database):
     assert len(repo.station_ratings) == 1
     assert repo.station_ratings[0] == rating
 
+def test_save_invalid_rating_to_repo(mock_database):
+    repo = ChargingStationRepository("mocked_path")
+
+    invalid_rating = "This is not a valid rating"
+    
+    with pytest.raises(ValueError, match="Invalid rating object"):
+        repo.save_rating_to_repo(invalid_rating)
+
 #________________________________________Test CSV reading________________________________________
 
 def test_load_stations_from_csv_valid(mock_database):
