@@ -94,3 +94,18 @@ class ChargingStationRepository:
             self.stations.append(station)
 
         return self.stations
+
+    def add_rating_to_station(self, rating):
+        """Adds a single rating to the ChargingStation with a matching station_id."""
+        if not isinstance(rating, Rating):
+            raise ValueError("Invalid rating object")
+
+        for station in self.stations:
+            if station.station_id == rating.station_id:
+                station.ratings.append(rating)
+                break
+
+    def add_all_ratings_to_stations(self):
+        """Loops through all ratings and assigns them to their corresponding ChargingStations."""
+        for rating in self.station_ratings:
+            self.add_rating_to_station(rating)
