@@ -63,6 +63,8 @@ class UserRepository:
 
     def save_to_database(self, user):
         """Saves a new user to the database."""
+        if not isinstance(user, User):
+            raise ValueError("Invalid user object")
         self.users_ref.child(user.id).set({
             "username": user.name,
             "password": user.password,

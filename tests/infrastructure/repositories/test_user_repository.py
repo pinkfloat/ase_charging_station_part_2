@@ -134,6 +134,14 @@ def test_save_to_database(mock_database):
     assert saved_user["password"] == "random_password"
     assert saved_user["date_joined"] == "2023-01-01T12:00:00"
 
+def test_save_invalid_user_to_database(mock_database):
+    repo = UserRepository("mocked_path")
+
+    invalid_user = {"id": "user_123", "name": "some_user"}  # Passing a dictionary instead of a User object
+    
+    with pytest.raises(ValueError, match="Invalid user object"):
+        repo.save_to_database(invalid_user)
+
 def test_hash_password(mock_database):
     repo = UserRepository("mocked_path")
 
