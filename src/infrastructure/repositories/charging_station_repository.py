@@ -48,6 +48,12 @@ class ChargingStationRepository:
             comment=comment
         )
         return rating
+    
+    def save_rating_to_repo(self, rating):
+        """Appends the rating on the repository rating list."""
+        if not isinstance(rating, Rating):
+            raise ValueError("Invalid rating object")
+        self.station_ratings.append(rating)
 
     def load_stations_from_csv(self, csv_file):
         df = pd.read_csv(csv_file)
