@@ -89,6 +89,22 @@ def test_load_station_ratings_from_empty_database(monkeypatch):
 
     assert len(ratings) == 0
 
+def test_create_rating(mock_database):
+    repo = ChargingStationRepository("mocked_path")
+
+    user_id = "user_123"
+    station_id = 3
+    value= 3
+    comment= "Meh"
+
+    station = repo.create_rating(user_id, station_id, value, comment)
+
+    assert isinstance(station, Rating)
+    assert station.user_id == user_id
+    assert station.station_id == station_id
+    assert station.value == value
+    assert station.comment == comment
+
 #________________________________________Test CSV reading________________________________________
 
 def test_load_stations_from_csv_valid(mock_database):
