@@ -37,7 +37,7 @@ class ChargingStationRepository:
             self.station_ratings.append(rating)
         return self.station_ratings
 
-    def load_from_csv(self, csv_file):
+    def load_stations_from_csv(self, csv_file):
         df = pd.read_csv(csv_file)
 
         # Validate that all required columns are present

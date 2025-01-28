@@ -91,7 +91,7 @@ def test_load_station_ratings_from_empty_database(monkeypatch):
 
 #________________________________________Test CSV reading________________________________________
 
-def test_load_from_csv_valid(mock_database):
+def test_load_stations_from_csv_valid(mock_database):
     repo = ChargingStationRepository("mocked_path")
 
     csv_data = """stationID,stationName,stationOperator,KW,Latitude,Longitude,PLZ
@@ -100,7 +100,7 @@ def test_load_from_csv_valid(mock_database):
 3,Station C,Operator Z,75.0,52.61259,13.30969,13467
 """
     mock_csv_data = StringIO(csv_data)
-    stations = repo.load_from_csv(mock_csv_data)
+    stations = repo.load_stations_from_csv(mock_csv_data)
 
     # Assert that the returned list is not empty
     assert len(stations) == 3
@@ -128,7 +128,7 @@ def test_load_from_csv_valid(mock_database):
     assert station.location.longitude == 13.3044
     assert station.postal_code.plz == "13467"
 
-def test_load_from_csv_missing_columns(mock_database):
+def test_load_stations_from_csv_missing_columns(mock_database):
     repo = ChargingStationRepository("mocked_path")
 
     csv_data = """stationID,stationName,KW,Latitude,Longitude
@@ -138,4 +138,4 @@ def test_load_from_csv_missing_columns(mock_database):
     mock_csv_data = StringIO(csv_data)
 
     with pytest.raises(ValueError, match="Missing required columns: stationOperator, PLZ"):
-        repo.load_from_csv(mock_csv_data)
+        repo.load_stations_from_csv(mock_csv_data)
