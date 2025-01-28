@@ -105,6 +105,15 @@ def test_create_rating(mock_database):
     assert station.value == value
     assert station.comment == comment
 
+def test_save_rating_to_repo(mock_database):
+    repo = ChargingStationRepository("mocked_path")
+
+    rating = Rating("user_123", 4, "2023-01-01T12:00:00", 2, "Urks")
+    repo.save_rating_to_repo(rating)
+
+    assert len(repo.station_ratings) == 1
+    assert repo.station_ratings[0] == rating
+
 #________________________________________Test CSV reading________________________________________
 
 def test_load_stations_from_csv_valid(mock_database):
