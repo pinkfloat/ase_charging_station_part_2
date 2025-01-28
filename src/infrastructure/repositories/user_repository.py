@@ -1,6 +1,6 @@
 # src/infrastructure/repositories/user_repository.py
 from firebase_admin import credentials, initialize_app, db
-from domain.aggregates.user import User
+from domain.entities.user import User
 from datetime import datetime
 import hashlib
 

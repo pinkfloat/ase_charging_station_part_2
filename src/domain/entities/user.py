@@ -1,4 +1,4 @@
-# src/domain/aggregates/user.py
+# src/domain/entities/user.py
 import re
 from datetime import datetime
 

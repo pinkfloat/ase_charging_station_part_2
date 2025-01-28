@@ -4,7 +4,7 @@ import hashlib
 from datetime import datetime
 from unittest.mock import patch, MagicMock
 from infrastructure.repositories.user_repository import UserRepository
-from domain.aggregates.user import User
+from domain.entities.user import User
 
 @pytest.fixture
 def mock_firebase_admin():

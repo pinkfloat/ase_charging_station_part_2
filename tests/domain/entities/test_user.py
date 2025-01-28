@@ -1,7 +1,7 @@
-# tests/domain/aggregates/test_user.py
+# tests/domain/entities/test_user.py
 import pytest
 from datetime import datetime
-from domain.aggregates.user import User
+from domain.entities.user import User
 
 class TestUser:
     def test_user_creation_valid(self):
