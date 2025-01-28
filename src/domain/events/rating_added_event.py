@@ -1,6 +1,6 @@
 # src/domain/events/rating_added_event.py
 from datetime import datetime
-from domain.entities.rating import Rating
+from domain.value_objects.rating import Rating
 
 class RatingAddedEvent:
     def __init__(self, station_id, rating, timestamp=None):

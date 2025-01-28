@@ -1,4 +1,4 @@
-# src/domain/entities/rating.py
+# src/domain/value_objects/rating.py
 class Rating:
     def __init__(self, user_name, value, comment=""):
         if not isinstance(value, int):

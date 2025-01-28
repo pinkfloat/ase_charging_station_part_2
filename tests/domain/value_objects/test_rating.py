@@ -1,6 +1,6 @@
-# tests/domain/entities/test_rating.py
+# tests/domain/value_objects/test_rating.py
 import pytest
-from domain.entities.rating import Rating
+from domain.value_objects.rating import Rating
 
 # Test valid initialization
 def test_rating_valid():

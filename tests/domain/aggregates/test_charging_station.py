@@ -3,8 +3,8 @@ import pytest
 import numpy as np
 from unittest.mock import Mock
 from domain.aggregates.charging_station import ChargingStation
-from domain.entities.rating import Rating
 from domain.events.rating_added_event import RatingAddedEvent
+from domain.value_objects.rating import Rating
 from domain.value_objects.location import Location
 from domain.value_objects.postal_code import PostalCode
 from domain.value_objects.status import Status
