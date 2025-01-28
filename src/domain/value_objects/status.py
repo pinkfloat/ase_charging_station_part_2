@@ -1,4 +1,5 @@
 # src/domain/value_objects/status.py
+import random
 from enum import Enum
 
 class Status(Enum):
@@ -9,3 +10,8 @@ class Status(Enum):
 
     def __str__(self):
         return self.value
+
+    @staticmethod
+    def get_random_status():
+        """Returns a random Status value."""
+        return random.choice(list(Status))

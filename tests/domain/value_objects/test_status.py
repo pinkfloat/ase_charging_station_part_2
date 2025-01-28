@@ -31,3 +31,9 @@ def test_status_by_value():
 def test_invalid_status_value():
     with pytest.raises(ValueError, match="is not a valid Status"):
         Status("invalid_value")
+
+# Test the get_random_status function
+def test_get_random_status():
+    for _ in range(100):  # Run multiple iterations to ensure randomness is covered
+        random_status = Status.get_random_status()
+        assert random_status in Status

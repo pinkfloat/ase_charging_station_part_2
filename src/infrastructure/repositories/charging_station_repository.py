@@ -1,7 +1,5 @@
 # src/infrastructure/repositories/charging_station_repository.py
 import pandas as pd
-import random
-import numpy as np
 from domain.aggregates.charging_station import ChargingStation
 from domain.value_objects.location import Location
 from domain.value_objects.postal_code import PostalCode
@@ -13,11 +11,6 @@ class ChargingStationRepository:
 
     def __init__(self):
         self.stations = []
-        self.time_slots = ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM"]
-    
-    def get_random_status(self):
-        random_status = random.choice(list(Status))
-        return random_status
 
     def load_from_csv(self, csv_file):
         df = pd.read_csv(csv_file)
@@ -31,6 +24,7 @@ class ChargingStationRepository:
         for _, row in df.iterrows():
             location = Location(latitude=row['Latitude'], longitude=row['Longitude'])
             postal_code = PostalCode(row['PLZ'])
+            time_slots = ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM"]
 
             station = ChargingStation(
                 station_id=row['stationID'],
@@ -39,8 +33,8 @@ class ChargingStationRepository:
                 power=row['KW'],
                 location=location,
                 postal_code=postal_code,
-                status=self.get_random_status(),
-                rush_hour_data=RushHours.generate_random_data(self.time_slots)
+                status=Status.get_random_status(),
+                rush_hour_data=RushHours.generate_random_data(time_slots)
             )
             self.stations.append(station)
 

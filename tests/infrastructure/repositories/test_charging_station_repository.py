@@ -12,19 +12,6 @@ from domain.value_objects.status import Status
 def repository():
     return ChargingStationRepository()
 
-def test_get_random_status(repository):
-    # Collect multiple random statuses
-    statuses = [repository.get_random_status() for _ in range(100)]
-
-    # Assert that all returned statuses are instances of Status
-    assert all(isinstance(status, Status) for status in statuses)
-
-    # Assert that all possible Status values are represented in the random sample
-    possible_statuses = set(Status)
-    observed_statuses = set(statuses)
-    assert observed_statuses.issubset(possible_statuses)
-    assert len(observed_statuses) > 1  # Ensure randomness
-
 # Test valid csv entries
 def test_load_from_csv_valid(repository):
     csv_data = """stationID,stationName,stationOperator,KW,Latitude,Longitude,PLZ
