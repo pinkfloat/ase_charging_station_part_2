@@ -5,6 +5,7 @@ from domain.value_objects.rating import Rating
 from domain.value_objects.location import Location
 from domain.value_objects.postal_code import PostalCode
 from domain.value_objects.status import Status
+from domain.value_objects.rush_hours import RushHours
 
 class ChargingStation:
     def __init__(self, station_id, name, operator, power, location, postal_code, status, rush_hour_data, event_publisher=None):
@@ -14,12 +15,12 @@ class ChargingStation:
             raise TypeError("postal_code must be an instance of PostalCode")
         if not isinstance(status, Status):
             raise TypeError("status must be an instance of Status")
+        if not isinstance(rush_hour_data, RushHours):
+            raise TypeError("rush_hour_data must be an instance of RushHours")
         if not isinstance(power, (int, float)):
             raise TypeError("power must be a float or an int")
         if not isinstance(station_id, int):
             raise TypeError("station_id must be an int")
-        if not isinstance(rush_hour_data, np.ndarray):
-            raise TypeError("rush_hour_data must be a numpy array")
 
         self.station_id = station_id
         self.name = name

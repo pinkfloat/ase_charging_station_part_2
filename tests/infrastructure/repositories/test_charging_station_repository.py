@@ -25,12 +25,6 @@ def test_get_random_status(repository):
     assert observed_statuses.issubset(possible_statuses)
     assert len(observed_statuses) > 1  # Ensure randomness
 
-def test_generate_rush_hours(repository):
-    rush_hours = repository.generate_rush_hours()
-    assert isinstance(rush_hours, np.ndarray)
-    assert len(rush_hours) == len(repository.time_slots)
-    assert all(0 <= value <= 5 for value in rush_hours) # values should be in the range 0 to 5"
-
 # Test valid csv entries
 def test_load_from_csv_valid(repository):
     csv_data = """stationID,stationName,stationOperator,KW,Latitude,Longitude,PLZ

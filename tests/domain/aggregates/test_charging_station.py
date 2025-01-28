@@ -8,6 +8,7 @@ from domain.value_objects.rating import Rating
 from domain.value_objects.location import Location
 from domain.value_objects.postal_code import PostalCode
 from domain.value_objects.status import Status
+from domain.value_objects.rush_hours import RushHours
 
 # Helper function to create valid dependencies
 def valid_location():
@@ -23,7 +24,7 @@ def valid_rating():
     return Rating(user_name="user123", value=4)
 
 def valid_rush_hour_data():
-    return np.zeros(10)
+    return RushHours(["6 AM", "7 AM", "8 AM", "9 AM"], [2.5, 3.0, 4.5, 1.0])
 
 # Test valid initialization
 def test_charging_station_valid_initialization():
@@ -120,7 +121,7 @@ def test_charging_station_invalid_status_type():
 
 # Test invalid rush_hour_data type
 def test_charging_station_invalid_rush_hour_data_type():
-    with pytest.raises(TypeError, match="rush_hour_data must be a numpy array"):
+    with pytest.raises(TypeError, match="rush_hour_data must be an instance of RushHours"):
         ChargingStation(
             station_id=1,
             name="Supercharger",

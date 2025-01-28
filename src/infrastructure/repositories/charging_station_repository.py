@@ -6,6 +6,7 @@ from domain.aggregates.charging_station import ChargingStation
 from domain.value_objects.location import Location
 from domain.value_objects.postal_code import PostalCode
 from domain.value_objects.status import Status
+from domain.value_objects.rush_hours import RushHours
 
 class ChargingStationRepository:
     REQUIRED_COLUMNS = ['stationID', 'stationName', 'stationOperator', 'KW', 'Latitude', 'Longitude', 'PLZ']
@@ -17,11 +18,6 @@ class ChargingStationRepository:
     def get_random_status(self):
         random_status = random.choice(list(Status))
         return random_status
-    
-    def generate_rush_hours(self):
-        rush_hours = np.random.normal(loc=2.5, scale=1.0, size=len(self.time_slots))
-        rush_hours = np.clip(rush_hours, 0, 5) # simulate 0-5 persons per hour
-        return rush_hours
 
     def load_from_csv(self, csv_file):
         df = pd.read_csv(csv_file)
@@ -44,7 +40,7 @@ class ChargingStationRepository:
                 location=location,
                 postal_code=postal_code,
                 status=self.get_random_status(),
-                rush_hour_data=self.generate_rush_hours()
+                rush_hour_data=RushHours.generate_random_data(self.time_slots)
             )
             self.stations.append(station)
 
