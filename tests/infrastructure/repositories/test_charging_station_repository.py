@@ -41,13 +41,10 @@ def mock_database(monkeypatch):
 
         def get(self):
             return self.data
-
-        def child(self, rating_id):
-            self.rating_id = rating_id
-            return self
-
-        def set(self, rating_data):
-            self.data[self.rating_id] = rating_data
+        
+        def push(self, rating_data):
+            new_raintg_id = "rating3"
+            self.data[new_raintg_id] = rating_data
 
     mock_db = MockFirebaseDB()
 
@@ -121,6 +118,34 @@ def test_save_invalid_rating_to_repo(mock_database):
     
     with pytest.raises(ValueError, match="Invalid rating object"):
         repo.save_rating_to_repo(invalid_rating)
+
+def test_save_rating_to_database(mock_database):
+    repo = ChargingStationRepository("mocked_path")
+
+    rating = Rating("user_789", 3, "2025-01-03T10:00:00", 5, "Fantastic station!")
+    repo.save_rating_to_database(rating)
+
+    saved_rating = mock_database.data["rating3"]
+    assert saved_rating["user_id"] == "user_789"
+    assert saved_rating["charging_station_id"] == 3
+    assert saved_rating["review_star"] == 5
+    assert saved_rating["review_text"] == "Fantastic station!"
+    assert saved_rating["review_date"] == "2025-01-03T10:00:00"
+
+def test_save_invalid_rating_to_database(mock_database):
+    repo = ChargingStationRepository("mocked_path")
+
+    invalid_rating = {
+        "user_id": "user_789",
+        "value": 5,
+        "date": "2025-01-03T10:00:00",
+        "station_id": 3,
+        "comment": "Fantastic station!"
+    }  # Passing a dictionary instead of a Rating object
+    
+    with pytest.raises(ValueError, match="Invalid rating object"):
+        repo.save_rating_to_database(invalid_rating)
+
 
 #________________________________________Test CSV reading________________________________________
 

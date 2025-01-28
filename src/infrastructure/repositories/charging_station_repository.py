@@ -55,6 +55,18 @@ class ChargingStationRepository:
             raise ValueError("Invalid rating object")
         self.station_ratings.append(rating)
 
+    def save_rating_to_database(self, rating):
+        """Saves a new rating to the database."""
+        if not isinstance(rating, Rating):
+            raise ValueError("Invalid rating object")
+        self.station_ratings_ref.push({
+            "user_id": rating.user_id,
+            "charging_station_id": rating.station_id,
+            "review_star": rating.value,
+            "review_text": rating.comment,
+            "review_date": rating.date
+        })
+
     def load_stations_from_csv(self, csv_file):
         df = pd.read_csv(csv_file)
 
