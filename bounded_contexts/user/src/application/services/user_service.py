@@ -2,8 +2,9 @@
 from user.src.infrastructure.repositories.user_repository import UserRepository
 
 class UserService:
-    def __init__(self, user_repository: UserRepository):
+    def __init__(self, user_repository: UserRepository, event_publisher=None):
         self.user_repository = user_repository
+        self.user_repository.event_publisher = event_publisher or (lambda event: None)
     
     def get_all_users(self):
         """Loads and returns all users from the database."""
