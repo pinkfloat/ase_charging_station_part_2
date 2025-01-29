@@ -4,9 +4,10 @@ from datetime import datetime
 import hashlib
 
 from user.src.domain.entities.user import User
+from user.src.domain.events.user_created_event import UserCreatedEvent
 
 class UserRepository:
-    def __init__(self, firebase_secret_json):
+    def __init__(self, firebase_secret_json, event_publisher=None):
         # Initialize Firebase only once
         if not db._apps:  # Check if Firebase is already initialized
             cred = credentials.Certificate(firebase_secret_json)
@@ -16,6 +17,9 @@ class UserRepository:
         
         self.users_ref = db.reference("users")
         self.users = []
+
+        # Dependency Injection for Event-Publisher
+        self.event_publisher = event_publisher or (lambda event: None)
 
     def load_from_database(self):
         user_dict = self.users_ref.get() or {}  # Get all users or an empty dictionary
@@ -45,6 +49,10 @@ class UserRepository:
             user_id_number = int(user.id.split("_")[1])
             max_id = max(max_id, user_id_number)
         return f"user_{max_id + 1}"
+    
+    def publish_event(self, event):
+        """Publishes an event using the injected publisher (i.e. flash)."""
+        self.event_publisher(event)
 
     def create_user(self, user_id, username, password):
         """Generates a new user object."""
@@ -54,6 +62,11 @@ class UserRepository:
             password=self.hash_password(password.strip()),
             date_joined=datetime.now().isoformat()
         )
+
+        # Create a UserCreatedEvent and publish it
+        event = UserCreatedEvent(user)
+        self.publish_event(event)
+
         return user
 
     def save_to_repo(self, user):

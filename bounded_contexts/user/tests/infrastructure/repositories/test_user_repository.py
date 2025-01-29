@@ -1,8 +1,10 @@
 # user/tests/infrastructure/repositories/test_user_repository.py
 import pytest
+from unittest.mock import MagicMock
 import hashlib
 from datetime import datetime
 from user.src.infrastructure.repositories.user_repository import UserRepository
+from user.src.domain.events.user_created_event import UserCreatedEvent
 from user.src.domain.entities.user import User
 
 @pytest.fixture
@@ -94,12 +96,17 @@ def test_get_next_user_id(mock_database):
     next_id = repo.get_next_user_id()
     assert next_id == "user_11"
 
-def test_create_user(mock_database):
-    repo = UserRepository("mocked_path")
+@pytest.fixture
+def mock_event_publisher():
+    return MagicMock()
+
+def test_create_user_with_event(mock_event_publisher, mock_database):
+    repo = UserRepository("mocked_path", event_publisher=mock_event_publisher)
 
     user_id = "user_123"
     username = "some_user"
     password = "random_password"
+
     user = repo.create_user(user_id, username, password)
 
     assert isinstance(user, User)
@@ -107,6 +114,12 @@ def test_create_user(mock_database):
     assert user.name == username.strip()
     assert user.password == hashlib.sha256(password.strip().encode()).hexdigest()
     assert datetime.fromisoformat(user.date_joined)
+
+    mock_event_publisher.assert_called_once()
+
+    event = mock_event_publisher.call_args[0][0]
+    assert isinstance(event, UserCreatedEvent)
+    assert event.user == user
 
 def test_save_to_repo(mock_database):
     repo = UserRepository("mocked_path")
