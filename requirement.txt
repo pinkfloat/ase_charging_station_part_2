@@ -1,6 +1,7 @@
 dash
 firebase-admin
 flask
+numpy
 openpyxl
 pandas
 plotly
