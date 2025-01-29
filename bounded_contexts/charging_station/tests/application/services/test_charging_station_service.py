@@ -36,3 +36,13 @@ def test_add_rating_to_station(service, mock_repository):
     mock_repository.save_rating_to_repo.assert_called_once_with(mock_rating)
     mock_repository.add_rating_to_station.assert_called_once_with(mock_rating)
     mock_repository.save_rating_to_database.assert_called_once_with(mock_rating) 
+
+def test_load_stations_from_csv(service, mock_repository):
+    csv_file = "dummy.csv"
+    mock_stations = [MagicMock(), MagicMock()]
+    mock_repository.load_stations_from_csv.return_value = mock_stations
+    
+    result = service.load_stations_from_csv(csv_file)
+    
+    mock_repository.load_stations_from_csv.assert_called_once_with(csv_file, service.event_publisher)
+    assert result == mock_stations
