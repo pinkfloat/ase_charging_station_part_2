@@ -1,7 +1,7 @@
-# tests/domain/value_objects/test_rating.py
+# tests/domain/entities/test_rating.py
 import pytest
 from datetime import datetime
-from domain.value_objects.rating import Rating
+from domain.entities.rating import Rating
 
 def test_rating_valid_inputs():
     rating = Rating(user_id="user_123", station_id=1, date="2023-01-01", value=5, comment="Great station!")

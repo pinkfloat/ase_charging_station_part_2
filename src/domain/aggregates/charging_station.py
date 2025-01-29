@@ -1,7 +1,7 @@
 # src/domain/aggregates/charging_station.py
 import numpy as np
 from domain.events.rating_added_event import RatingAddedEvent
-from domain.value_objects.rating import Rating
+from domain.entities.rating import Rating
 from domain.value_objects.location import Location
 from domain.value_objects.postal_code import PostalCode
 from domain.value_objects.status import Status

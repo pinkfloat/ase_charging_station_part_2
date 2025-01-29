@@ -1,4 +1,4 @@
-# src/domain/value_objects/rating.py
+# src/domain/entities/rating.py
 import re
 from datetime import datetime
 

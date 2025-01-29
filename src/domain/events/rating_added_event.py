@@ -1,5 +1,5 @@
 # src/domain/events/rating_added_event.py
-from domain.value_objects.rating import Rating
+from domain.entities.rating import Rating
 
 class RatingAddedEvent:
     def __init__(self, rating):

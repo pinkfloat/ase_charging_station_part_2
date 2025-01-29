@@ -7,7 +7,7 @@ from domain.value_objects.location import Location
 from domain.value_objects.postal_code import PostalCode
 from domain.value_objects.status import Status
 from domain.value_objects.rush_hours import RushHours
-from domain.value_objects.rating import Rating
+from domain.entities.rating import Rating
 
 class ChargingStationRepository:
     REQUIRED_COLUMNS = ['stationID', 'stationName', 'stationOperator', 'KW', 'Latitude', 'Longitude', 'PLZ']

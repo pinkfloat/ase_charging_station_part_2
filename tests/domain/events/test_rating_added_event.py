@@ -2,7 +2,7 @@
 import pytest
 from datetime import datetime
 from domain.events.rating_added_event import RatingAddedEvent
-from domain.value_objects.rating import Rating
+from domain.entities.rating import Rating
 
 def test_rating_added_event_initialization():
     rating = Rating(user_id="user_123", station_id=1, date="2025-01-01", value=4, comment="Great station!")
