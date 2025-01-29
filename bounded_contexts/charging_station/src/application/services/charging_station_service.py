@@ -7,6 +7,12 @@ class ChargingStationService:
             raise TypeError("repository must be an instance of RatedChargingStationRepository")
         self.repository = repository
         self.event_publisher = event_publisher or (lambda event: None)
+
+    def load_stations_from_csv(self, csv_file):
+        """
+        Loads charging stations from a CSV file via the repository.
+        """
+        return self.repository.load_stations_from_csv(csv_file, self.event_publisher)
     
     def load_all_ratings_to_stations(self):
         """
@@ -26,9 +32,3 @@ class ChargingStationService:
         self.repository.save_rating_to_database(rating)
         self.repository.save_rating_to_repo(rating)
         self.repository.add_rating_to_station(rating)
-    
-    def load_stations_from_csv(self, csv_file):
-        """
-        Loads charging stations from a CSV file via the repository.
-        """
-        return self.repository.load_stations_from_csv(csv_file, self.event_publisher)
