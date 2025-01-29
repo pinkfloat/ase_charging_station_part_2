@@ -12,7 +12,7 @@ class ChargingStationRepository:
     def __init__(self):
         self.stations = []
 
-    def load_stations_from_csv(self, csv_file):
+    def load_stations_from_csv(self, csv_file, event_publisher=None):
         df = pd.read_csv(csv_file)
 
         # Validate that all required columns are present
@@ -34,7 +34,8 @@ class ChargingStationRepository:
                 location=location,
                 postal_code=postal_code,
                 status=Status.get_random_status(),
-                rush_hour_data=RushHours.generate_random_data(time_slots)
+                rush_hour_data=RushHours.generate_random_data(time_slots),
+                event_publisher=event_publisher
             )
             self.stations.append(station)
 
