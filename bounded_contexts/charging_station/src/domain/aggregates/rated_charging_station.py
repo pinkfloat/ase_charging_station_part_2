@@ -26,7 +26,7 @@ class RatedChargingStation(ChargingStation):
         self.rush_hour_data = rush_hour_data
         self.ratings = []
 
-        # Dependency Injection für Event-Publisher
+        # Dependency Injection for Event-Publisher
         self.event_publisher = event_publisher or (lambda event: None)
 
     def publish_event(self, event):
