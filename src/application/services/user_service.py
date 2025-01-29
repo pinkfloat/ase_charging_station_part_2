@@ -4,6 +4,10 @@ from infrastructure.repositories.user_repository import UserRepository
 class UserService:
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
+    
+    def get_all_users(self):
+        """Loads and returns all users from the database."""
+        return self.user_repository.load_from_database()
 
     def create_user(self, username, password):
         """Creates a new user and saves it to the database."""

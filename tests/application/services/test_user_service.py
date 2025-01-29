@@ -2,6 +2,7 @@
 import pytest
 from unittest.mock import MagicMock
 from application.services.user_service import UserService
+from domain.entities.user import User
 
 @pytest.fixture
 def mock_user_repository():
@@ -55,3 +56,27 @@ def test_create_user_whitespace_password(user_service):
     """Test that creating a user with a password that is only whitespace raises ValueError."""
     with pytest.raises(ValueError, match="Password cannot be empty."):
         user_service.create_user("testuser", "   ")
+
+def test_get_all_users(user_service, mock_user_repository):
+    """Test retrieving all users from the database."""
+    mock_users = [
+        User(id="user_1", name="Alice", password="hashed_pw1", date_joined="2024-01-01T12:00:00"),
+        User(id="user_2", name="Bob", password="hashed_pw2", date_joined="2024-01-02T12:00:00")
+    ]
+    mock_user_repository.load_from_database.return_value = mock_users
+
+    users = user_service.get_all_users()
+
+    assert len(users) == 2
+    assert users[0].name == "Alice"
+    assert users[1].name == "Bob"
+    mock_user_repository.load_from_database.assert_called_once()
+
+def test_get_all_users_empty(user_service, mock_user_repository):
+    """Test retrieving users when the database is empty."""
+    mock_user_repository.load_from_database.return_value = []
+
+    users = user_service.get_all_users()
+
+    assert users == []  # Should return an empty list
+    mock_user_repository.load_from_database.assert_called_once()
