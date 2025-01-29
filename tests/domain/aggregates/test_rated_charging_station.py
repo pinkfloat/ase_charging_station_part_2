@@ -1,8 +1,7 @@
-# tests/domain/aggregates/test_charging_station.py
+# tests/domain/aggregates/test_rated_charging_station.py
 import pytest
-import numpy as np
 from unittest.mock import Mock
-from domain.aggregates.charging_station import ChargingStation
+from domain.aggregates.rated_charging_station import RatedChargingStation
 from domain.events.rating_added_event import RatingAddedEvent
 from domain.entities.rating import Rating
 from domain.value_objects.location import Location
@@ -29,7 +28,7 @@ def valid_rush_hour_data():
 # Test valid initialization
 def test_charging_station_valid_initialization():
 
-    station = ChargingStation(
+    station = RatedChargingStation(
         station_id=1,
         name="Supercharger",
         operator="Tesla",
@@ -52,7 +51,7 @@ def test_charging_station_valid_initialization():
 # Test invalid station_id type
 def test_charging_station_invalid_station_id_type():
     with pytest.raises(TypeError, match="station_id must be an int"):
-        ChargingStation(
+        RatedChargingStation(
             station_id="invalid",  # Invalid station_id type
             name="Supercharger",
             operator="Tesla",
@@ -66,7 +65,7 @@ def test_charging_station_invalid_station_id_type():
 # Test invalid power type
 def test_charging_station_invalid_power_type():
     with pytest.raises(TypeError, match="power must be a float or an int"):
-        ChargingStation(
+        RatedChargingStation(
             station_id=1,
             name="Supercharger",
             operator="Tesla",
@@ -80,7 +79,7 @@ def test_charging_station_invalid_power_type():
 # Test invalid location type
 def test_charging_station_invalid_location_type():
     with pytest.raises(TypeError, match="location must be an instance of Location"):
-        ChargingStation(
+        RatedChargingStation(
             station_id=1,
             name="Supercharger",
             operator="Tesla",
@@ -94,7 +93,7 @@ def test_charging_station_invalid_location_type():
 # Test invalid postal_code type
 def test_charging_station_invalid_postal_code_type():
     with pytest.raises(TypeError, match="postal_code must be an instance of PostalCode"):
-        ChargingStation(
+        RatedChargingStation(
             station_id=1,
             name="Supercharger",
             operator="Tesla",
@@ -108,7 +107,7 @@ def test_charging_station_invalid_postal_code_type():
 # Test invalid status type
 def test_charging_station_invalid_status_type():
     with pytest.raises(TypeError, match="status must be an instance of Status"):
-        ChargingStation(
+        RatedChargingStation(
             station_id=1,
             name="Supercharger",
             operator="Tesla",
@@ -122,7 +121,7 @@ def test_charging_station_invalid_status_type():
 # Test invalid rush_hour_data type
 def test_charging_station_invalid_rush_hour_data_type():
     with pytest.raises(TypeError, match="rush_hour_data must be an instance of RushHours"):
-        ChargingStation(
+        RatedChargingStation(
             station_id=1,
             name="Supercharger",
             operator="Tesla",
@@ -135,7 +134,7 @@ def test_charging_station_invalid_rush_hour_data_type():
 
 # Test adding a valid rating
 def test_add_valid_rating():
-    station = ChargingStation(
+    station = RatedChargingStation(
         station_id=1,
         name="Berlin Charging Station",
         operator="Green Energy",
@@ -155,7 +154,7 @@ def test_add_valid_rating():
 
 # Test adding an invalid rating
 def test_add_invalid_rating():
-    station = ChargingStation(
+    station = RatedChargingStation(
         station_id=2,
         name="Berlin Charging Station",
         operator="Green Energy",
@@ -174,7 +173,7 @@ def test_add_invalid_rating():
 
 # Test when there are no ratings
 def test_average_rating_no_ratings():
-    station = ChargingStation(
+    station = RatedChargingStation(
         station_id=3,
         name="Berlin Charging Station",
         operator="Green Energy",
@@ -190,7 +189,7 @@ def test_average_rating_no_ratings():
 
 # Test when there is one rating
 def test_average_rating_one_rating():
-    station = ChargingStation(
+    station = RatedChargingStation(
         station_id=4,
         name="Berlin Charging Station",
         operator="Green Energy",
@@ -208,7 +207,7 @@ def test_average_rating_one_rating():
 
 # Test when there are multiple ratings
 def test_average_rating_multiple_ratings():
-    station = ChargingStation(
+    station = RatedChargingStation(
         station_id=5,
         name="Berlin Charging Station",
         operator="Green Energy",
@@ -229,7 +228,7 @@ def test_average_rating_multiple_ratings():
 
 def test_publish_event():
     mock_event_publisher = Mock()
-    station = ChargingStation(
+    station = RatedChargingStation(
         station_id=6,
         name="Berlin Charging Station",
         operator="Green Energy",
@@ -242,7 +241,7 @@ def test_publish_event():
     )
 
     rating = Rating(user_id="user_15", station_id=8, date="2023-01-01", value=5, comment="Great station!")
-    test_event = RatingAddedEvent(station_id=station.station_id, rating=rating)
+    test_event = RatingAddedEvent(rating)
     station.publish_event(test_event)
 
     mock_event_publisher.assert_called_once_with(test_event)
