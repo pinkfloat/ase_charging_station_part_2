@@ -1,12 +1,12 @@
 # charging_station/tests/infrastructure/repositories/test_charging_station_repository.py
 import pytest
-from charging_station.src.infrastructure.repositories.rated_charging_station_repository import RatedChargingStationRepository
-from charging_station.src.domain.aggregates.rated_charging_station import RatedChargingStation
-from charging_station.src.domain.entities.rating import Rating
-from charging_station.src.domain.value_objects.location import Location
-from charging_station.src.domain.value_objects.postal_code import PostalCode
-from charging_station.src.domain.value_objects.status import Status
-from charging_station.src.domain.value_objects.rush_hours import RushHours
+from bounded_contexts.charging_station.src.infrastructure.repositories.rated_charging_station_repository import RatedChargingStationRepository
+from bounded_contexts.charging_station.src.domain.aggregates.rated_charging_station import RatedChargingStation
+from bounded_contexts.charging_station.src.domain.entities.rating import Rating
+from bounded_contexts.charging_station.src.domain.value_objects.location import Location
+from bounded_contexts.charging_station.src.domain.value_objects.postal_code import PostalCode
+from bounded_contexts.charging_station.src.domain.value_objects.status import Status
+from bounded_contexts.charging_station.src.domain.value_objects.rush_hours import RushHours
 
 @pytest.fixture
 def mock_database(monkeypatch):

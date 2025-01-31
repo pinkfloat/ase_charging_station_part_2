@@ -1,13 +1,13 @@
 # charging_station/tests/domain/aggregates/test_rated_charging_station.py
 import pytest
 from unittest.mock import Mock
-from charging_station.src.domain.aggregates.rated_charging_station import RatedChargingStation
-from charging_station.src.domain.events.rating_added_event import RatingAddedEvent
-from charging_station.src.domain.entities.rating import Rating
-from charging_station.src.domain.value_objects.location import Location
-from charging_station.src.domain.value_objects.postal_code import PostalCode
-from charging_station.src.domain.value_objects.status import Status
-from charging_station.src.domain.value_objects.rush_hours import RushHours
+from bounded_contexts.charging_station.src.domain.aggregates.rated_charging_station import RatedChargingStation
+from bounded_contexts.charging_station.src.domain.events.rating_added_event import RatingAddedEvent
+from bounded_contexts.charging_station.src.domain.entities.rating import Rating
+from bounded_contexts.charging_station.src.domain.value_objects.location import Location
+from bounded_contexts.charging_station.src.domain.value_objects.postal_code import PostalCode
+from bounded_contexts.charging_station.src.domain.value_objects.status import Status
+from bounded_contexts.charging_station.src.domain.value_objects.rush_hours import RushHours
 
 # Helper function to create valid dependencies
 def valid_location():

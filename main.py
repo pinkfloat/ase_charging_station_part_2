@@ -62,7 +62,7 @@ def create_profile():
             flash(f"Error signing up: {e}", "error")
             return redirect(url_for("create_profile"))
 
-    return render_template("CreateProfile.html")
+    return render_template("CreateProfile_new.html")
 
 # Route to handle user login
 @app.route("/login", methods=["GET", "POST"])

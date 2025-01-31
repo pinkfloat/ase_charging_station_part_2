@@ -1,6 +1,6 @@
 # charging_station/tests/domain/value_objects/test_status.py
 import pytest
-from charging_station.src.domain.value_objects.status import Status
+from bounded_contexts.charging_station.src.domain.value_objects.status import Status
 
 # Test that all expected statuses are defined
 def test_status_enum_values():

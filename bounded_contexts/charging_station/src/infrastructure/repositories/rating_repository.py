@@ -1,7 +1,7 @@
 # charging_station/src/infrastructure/repositories/rating_repository.py
 from datetime import datetime
 from firebase_admin import credentials, initialize_app, db
-from charging_station.src.domain.entities.rating import Rating
+from bounded_contexts.charging_station.src.domain.entities.rating import Rating
 
 class RatingRepository:
     def __init__(self, firebase_secret_json):

@@ -1,7 +1,7 @@
 # charging_station/tests/domain/value_objects/test_rush_hours.py
 import pytest
 import numpy as np
-from charging_station.src.domain.value_objects.rush_hours import RushHours
+from bounded_contexts.charging_station.src.domain.value_objects.rush_hours import RushHours
 
 def test_rush_hours_initialization():
     time_slots = ["6 AM", "7 AM", "8 AM", "9 AM"]

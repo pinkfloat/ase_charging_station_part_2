@@ -3,9 +3,9 @@ import pytest
 from unittest.mock import MagicMock
 import hashlib
 from datetime import datetime
-from user.src.infrastructure.repositories.user_repository import UserRepository
-from user.src.domain.events.user_created_event import UserCreatedEvent
-from user.src.domain.entities.user import User
+from bounded_contexts.user.src.infrastructure.repositories.user_repository import UserRepository
+from bounded_contexts.user.src.domain.events.user_created_event import UserCreatedEvent
+from bounded_contexts.user.src.domain.entities.user import User
 
 @pytest.fixture
 def mock_database(monkeypatch):

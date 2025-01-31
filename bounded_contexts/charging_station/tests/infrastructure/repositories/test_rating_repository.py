@@ -1,7 +1,7 @@
 # charging_station/tests/infrastructure/repositories/test_rating_repository.py
 import pytest
-from charging_station.src.domain.entities.rating import Rating
-from charging_station.src.infrastructure.repositories.rating_repository import RatingRepository
+from bounded_contexts.charging_station.src.domain.entities.rating import Rating
+from bounded_contexts.charging_station.src.infrastructure.repositories.rating_repository import RatingRepository
 
 @pytest.fixture
 def mock_database(monkeypatch):

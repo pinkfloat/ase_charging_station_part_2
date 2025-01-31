@@ -1,5 +1,5 @@
 # user/src/domain/events/user_added_event.py
-from user.src.domain.entities.user import User
+from bounded_contexts.user.src.domain.entities.user import User
 
 class UserCreatedEvent:
     def __init__(self, user):

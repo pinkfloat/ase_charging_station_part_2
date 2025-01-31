@@ -1,5 +1,5 @@
 # user/src/application/services/user_service.py
-from user.src.infrastructure.repositories.user_repository import UserRepository
+from bounded_contexts.user.src.infrastructure.repositories.user_repository import UserRepository
 
 class UserService:
     def __init__(self, user_repository: UserRepository, event_publisher=None):
