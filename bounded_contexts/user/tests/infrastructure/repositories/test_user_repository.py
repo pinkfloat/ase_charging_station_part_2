@@ -7,6 +7,8 @@ from bounded_contexts.user.src.infrastructure.repositories.user_repository impor
 from bounded_contexts.user.src.domain.events.user_created_event import UserCreatedEvent
 from bounded_contexts.user.src.domain.entities.user import User
 
+import firebase_admin
+
 @pytest.fixture
 def mock_database(monkeypatch):
     """Mock the Firebase database using monkeypatch."""
@@ -45,12 +47,16 @@ def mock_database(monkeypatch):
     mock_db = MockFirebaseDB()
 
     # Patch the UserRepository's db attribute
-    monkeypatch.setattr("user.src.infrastructure.repositories.user_repository.db", mock_db)
+    monkeypatch.setattr("bounded_contexts.user.src.infrastructure.repositories.user_repository.db", mock_db)
     return mock_db
 
-def test_load_from_database(mock_database):
+def test_load_from_database(mock_database, monkeypatch):
+    """Fixture to create a mock repository with monkeypatched Firebase app."""
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = UserRepository("mocked_path")
     users = repo.load_from_database()
+
 
     assert len(users) == 2
     assert users[0].id == "user_1"
@@ -74,20 +80,29 @@ def test_load_from_empty_database(monkeypatch):
         def get(self):
             return {}
 
-    monkeypatch.setattr("user.src.infrastructure.repositories.user_repository.db", EmptyFirebaseDB())
+    monkeypatch.setattr("bounded_contexts.user.src.infrastructure.repositories.user_repository.db", EmptyFirebaseDB())
+    """Fixture to create a mock repository with monkeypatched Firebase app."""
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = UserRepository("mocked_path")
     users = repo.load_from_database()
 
     assert len(users) == 0
 
-def test_check_if_username_exists(mock_database):
+def test_check_if_username_exists(mock_database, monkeypatch):
+    """Fixture to create a mock repository with monkeypatched Firebase app."""
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = UserRepository("mocked_path")
     repo.load_from_database()
 
     assert repo.check_if_username_exists("test_user") is True
     assert repo.check_if_username_exists("non_existing_user") is False
 
-def test_get_next_user_id(mock_database):
+def test_get_next_user_id(mock_database, monkeypatch):
+    """Fixture to create a mock repository with monkeypatched Firebase app."""
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = UserRepository("mocked_path")
     repo.load_from_database()
     repo.users.append(User(id="user_3", name="user3", password="pass", date_joined="2023-01-01T12:00:00"))
@@ -100,7 +115,10 @@ def test_get_next_user_id(mock_database):
 def mock_event_publisher():
     return MagicMock()
 
-def test_create_user_with_event(mock_event_publisher, mock_database):
+def test_create_user_with_event(mock_event_publisher, mock_database, monkeypatch):
+    """Fixture to create a mock repository with monkeypatched Firebase app."""
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = UserRepository("mocked_path", event_publisher=mock_event_publisher)
 
     user_id = "user_123"
@@ -121,7 +139,10 @@ def test_create_user_with_event(mock_event_publisher, mock_database):
     assert isinstance(event, UserCreatedEvent)
     assert event.user == user
 
-def test_save_to_repo(mock_database):
+def test_save_to_repo(mock_database, monkeypatch):
+    """Fixture to create a mock repository with monkeypatched Firebase app."""
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = UserRepository("mocked_path")
 
     user = User("user_123", "some_user", "random_password", "2023-01-01T12:00:00")
@@ -130,13 +151,19 @@ def test_save_to_repo(mock_database):
     assert len(repo.users) == 1
     assert repo.users[0] == user
 
-def test_save_to_repo_invalid_user(mock_database):
+def test_save_to_repo_invalid_user(mock_database, monkeypatch):
+    """Fixture to create a mock repository with monkeypatched Firebase app."""
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = UserRepository("mocked_path")
 
     with pytest.raises(ValueError, match="Invalid user object"):
         repo.save_to_repo("not_a_user_object")
 
-def test_save_to_database(mock_database):
+def test_save_to_database(mock_database, monkeypatch):
+    """Fixture to create a mock repository with monkeypatched Firebase app."""
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = UserRepository("mocked_path")
 
     user = User("user_123", "some_user", "random_password", "2023-01-01T12:00:00")
@@ -147,7 +174,10 @@ def test_save_to_database(mock_database):
     assert saved_user["password"] == "random_password"
     assert saved_user["date_joined"] == "2023-01-01T12:00:00"
 
-def test_save_invalid_user_to_database(mock_database):
+def test_save_invalid_user_to_database(mock_database, monkeypatch):
+    """Fixture to create a mock repository with monkeypatched Firebase app."""
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = UserRepository("mocked_path")
 
     invalid_user = {"id": "user_123", "name": "some_user"}  # Passing a dictionary instead of a User object
@@ -155,7 +185,10 @@ def test_save_invalid_user_to_database(mock_database):
     with pytest.raises(ValueError, match="Invalid user object"):
         repo.save_to_database(invalid_user)
 
-def test_hash_password(mock_database):
+def test_hash_password(mock_database, monkeypatch):
+    """Fixture to create a mock repository with monkeypatched Firebase app."""
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = UserRepository("mocked_path")
 
     password = "secure_password"
