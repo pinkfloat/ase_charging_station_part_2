@@ -9,9 +9,14 @@ class Status(Enum):
     MAINTENANCE = "maintenance"
 
     def __str__(self):
+        """
+        Returns the string representation of the Status value object.
+        """
         return self.value
 
     @staticmethod
     def get_random_status():
-        """Returns a random Status value."""
+        """
+        Returns a random Status value object.
+        """
         return random.choice(list(Status))

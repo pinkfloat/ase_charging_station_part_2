@@ -4,6 +4,9 @@ from datetime import datetime
 
 class Rating:
     def __init__(self, user_id, station_id, date, value, comment=""):
+        """
+        Initializes a Rating entity.
+        """
         if not re.match(r"^user_\d+$", user_id):
             raise ValueError("Invalid user ID format")
         if not isinstance(station_id, int):

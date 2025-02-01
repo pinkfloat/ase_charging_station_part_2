@@ -2,6 +2,9 @@
 
 class ChargingStation:
     def __init__(self, station_id, name, operator, power):
+        """
+        Initializes a ChargingStation entity.
+        """
         if not isinstance(power, (int, float)):
             raise TypeError("power must be a float or an int")
         if not isinstance(station_id, int):

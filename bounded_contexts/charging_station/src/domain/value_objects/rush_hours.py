@@ -3,6 +3,9 @@ import numpy as np
 
 class RushHours:
     def __init__(self, time_slots, data):
+        """
+        Initializes a RushHours value object.
+        """
         if len(time_slots) != len(data):
             raise ValueError("Length of data must match length of time_slots")
         self.time_slots = time_slots
@@ -10,15 +13,24 @@ class RushHours:
 
     @staticmethod
     def generate_random_data(time_slots, mean=2.5, std_dev=1.0, min_val=0, max_val=5):
+        """
+        Generates random rush hour data based on a normal distribution and returns a RushHours object.
+        """
         data = np.random.normal(loc=mean, scale=std_dev, size=len(time_slots))
         data = np.clip(data, min_val, max_val)  # Clip data to the specified range
         return RushHours(time_slots, data)
 
     def to_dict(self):
+        """
+        Converts the RushHours object to a dictionary where time slots are keys and data values are values.
+        """
         return dict(zip(self.time_slots, self.data))
 
     @staticmethod
     def from_dict(data_dict):
+        """
+        Creates a RushHours object from a dictionary of time slots and corresponding data.
+        """
         time_slots = list(data_dict.keys())
         data = list(data_dict.values())
         return RushHours(time_slots, data)

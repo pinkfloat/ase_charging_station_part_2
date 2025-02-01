@@ -6,7 +6,9 @@ from charging_station.src.domain.entities.rating import Rating
 
 class RatingRepository:
     def __init__(self, firebase_secret_json):
-        # Initialize Firebase only once
+        """
+        Initializes the RatingRepository, sets up Firebase connection using the provided secret JSON file.
+        """
         if not firebase_admin._apps:  # Check if Firebase is already initialized
             cred = credentials.Certificate(firebase_secret_json)
             initialize_app(cred, {
@@ -17,6 +19,9 @@ class RatingRepository:
         self.station_ratings = []
     
     def load_station_ratings_from_database(self):
+        """
+        Loads all station ratings from the Firebase database and returns them as Rating objects.
+        """
         rating_dict = self.station_ratings_ref.get() or {}  # Get all ratings or an empty dictionary
 
         for rating_id, data in rating_dict.items():
@@ -31,7 +36,9 @@ class RatingRepository:
         return self.station_ratings
 
     def create_rating(self, user_id, station_id, value, comment):
-        """Generates a new rating object."""
+        """
+        Generates a new rating object.
+        """
         rating = Rating(
             user_id=user_id,
             station_id=station_id,
@@ -42,13 +49,17 @@ class RatingRepository:
         return rating
     
     def save_rating_to_repo(self, rating):
-        """Appends the rating on the repository rating list."""
+        """
+        Appends the rating on the repository rating list.
+        """
         if not isinstance(rating, Rating):
             raise ValueError("Invalid rating object")
         self.station_ratings.append(rating)
 
     def save_rating_to_database(self, rating):
-        """Saves a new rating to the database."""
+        """
+        Saves a new rating to the database.
+        """
         if not isinstance(rating, Rating):
             raise ValueError("Invalid rating object")
         self.station_ratings_ref.push({

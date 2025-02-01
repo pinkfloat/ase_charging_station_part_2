@@ -3,6 +3,9 @@ from charging_station.src.infrastructure.repositories.rated_charging_station_rep
 
 class ChargingStationService:
     def __init__(self, repository: RatedChargingStationRepository, event_publisher=None):
+        """
+        Initializes a ChargingStationService instance.
+        """
         if not isinstance(repository, RatedChargingStationRepository):
             raise TypeError("repository must be an instance of RatedChargingStationRepository")
         self.repository = repository
