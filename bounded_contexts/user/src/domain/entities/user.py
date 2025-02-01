@@ -4,6 +4,10 @@ from datetime import datetime
 
 class User:
     def __init__(self, id, name, password, date_joined):
+        """
+        Initializes a User entity with the provided details. Validates the user ID format,
+        checks that name and password are not empty, and ensures the date_joined is in ISO 8601 format.
+        """
         if not re.match(r"^user_\d+$", id):
             raise ValueError("Invalid user ID format")
         if not name:

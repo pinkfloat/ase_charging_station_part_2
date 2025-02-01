@@ -9,7 +9,9 @@ from user.src.domain.events.user_created_event import UserCreatedEvent
 
 class UserRepository:
     def __init__(self, firebase_secret_json, event_publisher=None):
-        # Initialize Firebase only once
+        """
+        Initializes the UserRepository, sets up Firebase connection using the provided secret JSON file.
+        """
         if not firebase_admin._apps:  # Check if Firebase is already initialized
             cred = credentials.Certificate(firebase_secret_json)
             initialize_app(cred, {
@@ -23,6 +25,9 @@ class UserRepository:
         self.event_publisher = event_publisher or (lambda event: None)
 
     def load_from_database(self):
+        """
+        Loads all users from the database and returns them as User objects.
+        """
         user_dict = self.users_ref.get() or {}  # Get all users or an empty dictionary
 
         for user_id, data in user_dict.items():
@@ -36,14 +41,18 @@ class UserRepository:
         return self.users
 
     def check_if_username_exists(self, username):
-        """Checks if a username exists in the database."""
+        """
+        Checks if a username exists in the database.
+        """
         for user in self.users:
             if user.name == username:
                 return True
         return False
     
     def get_next_user_id(self):
-        """Finds the highest existing user ID and generates the next one."""
+        """
+        Finds the highest existing user ID and generates the next one.
+        """
         max_id = 0
         for user in self.users:
             # Extract the numeric part of the user ID
@@ -52,11 +61,15 @@ class UserRepository:
         return f"user_{max_id + 1}"
     
     def publish_event(self, event):
-        """Publishes an event using the injected publisher (i.e. flash)."""
+        """
+        Publishes an event using the injected publisher (i.e. flash).
+        """
         self.event_publisher(event)
 
     def create_user(self, user_id, username, password):
-        """Generates a new user object."""
+        """
+        Generates a new user object.
+        """
         user = User(
             id=user_id,
             name=username.strip(),
@@ -71,13 +84,17 @@ class UserRepository:
         return user
 
     def save_to_repo(self, user):
-        """Appends the user on the repository users list."""
+        """
+        Appends the user on the repository users list.
+        """
         if not isinstance(user, User):
             raise ValueError("Invalid user object")
         self.users.append(user)
 
     def save_to_database(self, user):
-        """Saves a new user to the database."""
+        """
+        Saves a new user to the database.
+        """
         if not isinstance(user, User):
             raise ValueError("Invalid user object")
         self.users_ref.child(user.id).set({
@@ -87,4 +104,7 @@ class UserRepository:
         })
 
     def hash_password(self, password):
+        """
+        Hashes the given password using SHA-256 and returns the hashed value.
+        """
         return hashlib.sha256(password.encode()).hexdigest()
