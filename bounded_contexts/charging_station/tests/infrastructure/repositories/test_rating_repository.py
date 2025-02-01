@@ -185,7 +185,7 @@ def test_firebase_initialization_when_not_initialized(monkeypatch):
     # Patch initialize_app in the repository's module namespace.
     # Note: Adjust the import path if necessary.
     monkeypatch.setattr(
-        "bounded_contexts.charging_station.src.infrastructure.repositories.rating_repository.initialize_app",
+        "charging_station.src.infrastructure.repositories.rating_repository.initialize_app",
         fake_initialize_app
     )
 

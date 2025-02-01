@@ -219,7 +219,7 @@ def test_firebase_initialization_when_not_initialized(monkeypatch):
 
     monkeypatch.setattr(credentials, 'Certificate', lambda path: fake_cert)
     monkeypatch.setattr(
-        "bounded_contexts.user.src.infrastructure.repositories.user_repository.initialize_app",
+        "user.src.infrastructure.repositories.user_repository.initialize_app",
         fake_initialize_app
     )
     monkeypatch.setattr(firebase_admin, 'get_app', lambda name="[DEFAULT]": MagicMock())
@@ -247,7 +247,7 @@ def test_firebase_initialization_skipped_when_already_initialized(monkeypatch):
     # Mock initialize_app to verify it is NOT called
     fake_initialize_app = MagicMock(name="initialize_app")
     monkeypatch.setattr(
-        "bounded_contexts.user.src.infrastructure.repositories.user_repository.initialize_app",
+        "user.src.infrastructure.repositories.user_repository.initialize_app",
         fake_initialize_app
     )
 
@@ -277,7 +277,7 @@ def test_firebase_initialization_failure(monkeypatch):
 
     monkeypatch.setattr(credentials, 'Certificate', lambda path: fake_cert)
     monkeypatch.setattr(
-        "bounded_contexts.user.src.infrastructure.repositories.user_repository.initialize_app",
+        "user.src.infrastructure.repositories.user_repository.initialize_app",
         fake_initialize_app_failure
     )
 
@@ -297,7 +297,7 @@ def test_firebase_initialization_invalid_certificate(monkeypatch):
     fake_initialize_app = MagicMock(name="initialize_app")
     monkeypatch.setattr(credentials, 'Certificate', fake_certificate_failure)
     monkeypatch.setattr(
-        "bounded_contexts.user.src.infrastructure.repositories.user_repository.initialize_app",
+        "user.src.infrastructure.repositories.user_repository.initialize_app",
         fake_initialize_app
     )
 
