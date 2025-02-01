@@ -1,13 +1,13 @@
 # charging_station/tests/infrastructure/repositories/test_charging_station_repository.py
 import pytest
 from io import StringIO
-from bounded_contexts.charging_station.src.infrastructure.repositories.charging_station_repository import ChargingStationRepository
-from bounded_contexts.charging_station.src.domain.entities.charging_station import ChargingStation
-from bounded_contexts.charging_station.src.domain.entities.rating import Rating
-from bounded_contexts.charging_station.src.domain.value_objects.location import Location
-from bounded_contexts.charging_station.src.domain.value_objects.postal_code import PostalCode
-from bounded_contexts.charging_station.src.domain.value_objects.status import Status
-from bounded_contexts.charging_station.src.domain.value_objects.rush_hours import RushHours
+from charging_station.src.infrastructure.repositories.charging_station_repository import ChargingStationRepository
+from charging_station.src.domain.entities.charging_station import ChargingStation
+from charging_station.src.domain.entities.rating import Rating
+from charging_station.src.domain.value_objects.location import Location
+from charging_station.src.domain.value_objects.postal_code import PostalCode
+from charging_station.src.domain.value_objects.status import Status
+from charging_station.src.domain.value_objects.rush_hours import RushHours
 
 def test_load_stations_from_csv_valid():
     repo = ChargingStationRepository()

@@ -1,7 +1,7 @@
 # charging_station/src/infrastructure/repositories/rated_charging_station_repository.py
-from bounded_contexts.charging_station.src.infrastructure.repositories.charging_station_repository import ChargingStationRepository
-from bounded_contexts.charging_station.src.infrastructure.repositories.rating_repository import RatingRepository
-from bounded_contexts.charging_station.src.domain.entities.rating import Rating
+from charging_station.src.infrastructure.repositories.charging_station_repository import ChargingStationRepository
+from charging_station.src.infrastructure.repositories.rating_repository import RatingRepository
+from charging_station.src.domain.entities.rating import Rating
 
 class RatedChargingStationRepository(ChargingStationRepository, RatingRepository):
     def __init__(self, firebase_secret_json):

@@ -1,7 +1,7 @@
 # charging_station/tests/infrastructure/repositories/test_rating_repository.py
 import pytest
-from bounded_contexts.charging_station.src.domain.entities.rating import Rating
-from bounded_contexts.charging_station.src.infrastructure.repositories.rating_repository import RatingRepository
+from charging_station.src.domain.entities.rating import Rating
+from charging_station.src.infrastructure.repositories.rating_repository import RatingRepository
 
 import firebase_admin
 
@@ -44,7 +44,7 @@ def mock_database(monkeypatch):
     mock_db = MockFirebaseDB()
 
     # Patch the RatingRepository's db attribute
-    monkeypatch.setattr("bounded_contexts.charging_station.src.infrastructure.repositories.rating_repository.db", mock_db)
+    monkeypatch.setattr("charging_station.src.infrastructure.repositories.rating_repository.db", mock_db)
     return mock_db
 
 def test_load_station_ratings_from_database(mock_database, monkeypatch):
@@ -78,7 +78,7 @@ def test_load_station_ratings_from_empty_database(monkeypatch):
         def get(self):
             return {}
 
-    monkeypatch.setattr("bounded_contexts.charging_station.src.infrastructure.repositories.rating_repository.db", EmptyFirebaseDB())
+    monkeypatch.setattr("charging_station.src.infrastructure.repositories.rating_repository.db", EmptyFirebaseDB())
     # Prevent Firebase from initializing by faking existing apps
     monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = RatingRepository("mocked_path")

@@ -1,8 +1,8 @@
 # charging_station/tests/domain/events/test_rating_added_event.py
 import pytest
 from datetime import datetime
-from bounded_contexts.charging_station.src.domain.events.rating_added_event import RatingAddedEvent
-from bounded_contexts.charging_station.src.domain.entities.rating import Rating
+from charging_station.src.domain.events.rating_added_event import RatingAddedEvent
+from charging_station.src.domain.entities.rating import Rating
 
 def test_rating_added_event_initialization():
     rating = Rating(user_id="user_123", station_id=1, date="2025-01-01", value=4, comment="Great station!")

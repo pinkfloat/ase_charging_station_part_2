@@ -1,10 +1,10 @@
 # charging_station/src/infrastructure/repositories/charging_station_repository.py
 import pandas as pd
-from bounded_contexts.charging_station.src.domain.aggregates.rated_charging_station import RatedChargingStation
-from bounded_contexts.charging_station.src.domain.value_objects.location import Location
-from bounded_contexts.charging_station.src.domain.value_objects.postal_code import PostalCode
-from bounded_contexts.charging_station.src.domain.value_objects.status import Status
-from bounded_contexts.charging_station.src.domain.value_objects.rush_hours import RushHours
+from charging_station.src.domain.aggregates.rated_charging_station import RatedChargingStation
+from charging_station.src.domain.value_objects.location import Location
+from charging_station.src.domain.value_objects.postal_code import PostalCode
+from charging_station.src.domain.value_objects.status import Status
+from charging_station.src.domain.value_objects.rush_hours import RushHours
 
 class ChargingStationRepository:
     REQUIRED_COLUMNS = ['stationID', 'stationName', 'stationOperator', 'KW', 'Latitude', 'Longitude', 'PLZ']

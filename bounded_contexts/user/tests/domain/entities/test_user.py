@@ -1,7 +1,7 @@
 # user/tests/domain/entities/test_user.py
 import pytest
 from datetime import datetime
-from bounded_contexts.user.src.domain.entities.user import User
+from user.src.domain.entities.user import User
 
 class TestUser:
     def test_user_creation_valid(self):

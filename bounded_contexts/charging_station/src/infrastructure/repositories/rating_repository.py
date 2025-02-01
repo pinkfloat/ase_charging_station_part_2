@@ -2,7 +2,7 @@
 from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials, initialize_app, db
-from bounded_contexts.charging_station.src.domain.entities.rating import Rating
+from charging_station.src.domain.entities.rating import Rating
 
 class RatingRepository:
     def __init__(self, firebase_secret_json):

@@ -1,8 +1,8 @@
 # user/tests/domain/events/test_user_created_event.py
 import pytest
 from datetime import datetime
-from bounded_contexts.user.src.domain.events.user_created_event import UserCreatedEvent
-from bounded_contexts.user.src.domain.entities.user import User
+from user.src.domain.events.user_created_event import UserCreatedEvent
+from user.src.domain.entities.user import User
 
 def test_user_created_event_initialization():
     user = User(id="user_123", name="pinkfloat", password="abcdefgh", date_joined="2025-01-01")

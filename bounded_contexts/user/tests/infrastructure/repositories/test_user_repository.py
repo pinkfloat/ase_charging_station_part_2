@@ -3,9 +3,9 @@ import pytest
 from unittest.mock import MagicMock
 import hashlib
 from datetime import datetime
-from bounded_contexts.user.src.infrastructure.repositories.user_repository import UserRepository
-from bounded_contexts.user.src.domain.events.user_created_event import UserCreatedEvent
-from bounded_contexts.user.src.domain.entities.user import User
+from user.src.infrastructure.repositories.user_repository import UserRepository
+from user.src.domain.events.user_created_event import UserCreatedEvent
+from user.src.domain.entities.user import User
 
 import firebase_admin
 
@@ -47,7 +47,7 @@ def mock_database(monkeypatch):
     mock_db = MockFirebaseDB()
 
     # Patch the UserRepository's db attribute
-    monkeypatch.setattr("bounded_contexts.user.src.infrastructure.repositories.user_repository.db", mock_db)
+    monkeypatch.setattr("user.src.infrastructure.repositories.user_repository.db", mock_db)
     return mock_db
 
 def test_load_from_database(mock_database, monkeypatch):
@@ -80,7 +80,7 @@ def test_load_from_empty_database(monkeypatch):
         def get(self):
             return {}
 
-    monkeypatch.setattr("bounded_contexts.user.src.infrastructure.repositories.user_repository.db", EmptyFirebaseDB())
+    monkeypatch.setattr("user.src.infrastructure.repositories.user_repository.db", EmptyFirebaseDB())
     """Fixture to create a mock repository with monkeypatched Firebase app."""
     # Prevent Firebase from initializing by faking existing apps
     monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])

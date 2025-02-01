@@ -1,8 +1,8 @@
 # user/tests/application/services/test_user_service.py
 import pytest
 from unittest.mock import MagicMock
-from bounded_contexts.user.src.application.services.user_service import UserService
-from bounded_contexts.user.src.domain.entities.user import User
+from user.src.application.services.user_service import UserService
+from user.src.domain.entities.user import User
 
 @pytest.fixture
 def mock_user_repository():

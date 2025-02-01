@@ -1,6 +1,6 @@
 # charging_station/tests/domain/entities/test_charging_station.py
 import pytest
-from bounded_contexts.charging_station.src.domain.entities.charging_station import ChargingStation
+from charging_station.src.domain.entities.charging_station import ChargingStation
 
 # Test valid initialization
 def test_charging_station_valid_initialization():

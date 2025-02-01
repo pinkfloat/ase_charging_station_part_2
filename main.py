@@ -5,8 +5,8 @@ from functools import wraps
 
 
 # Import domain services and repositories
-from bounded_contexts.user.src.application.services.user_service import UserService
-from bounded_contexts.user.src.infrastructure.repositories.user_repository import UserRepository
+from user.src.application.services.user_service import UserService
+from user.src.infrastructure.repositories.user_repository import UserRepository
 
 # Initialize Repositories and Services
 user_repository = UserRepository(firebase_secret_json="./secret/firebase.json")

@@ -1,6 +1,6 @@
 # charging_station/tests/domain/value_objects/test_postal_code.py
 import pytest
-from bounded_contexts.charging_station.src.domain.value_objects.postal_code import PostalCode
+from charging_station.src.domain.value_objects.postal_code import PostalCode
 
 # Test successful initialization with a string
 def test_postal_code_valid():

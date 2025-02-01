@@ -1,6 +1,6 @@
 # charging_station/tests/domain/value_objects/test_location.py
 import pytest
-from bounded_contexts.charging_station.src.domain.value_objects.location import Location
+from charging_station.src.domain.value_objects.location import Location
 
 # Test valid location initialization (within Berlin's bounds)
 def test_location_valid():

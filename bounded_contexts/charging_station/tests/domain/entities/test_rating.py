@@ -1,7 +1,7 @@
 # charging_station/tests/domain/entities/test_rating.py
 import pytest
 from datetime import datetime
-from bounded_contexts.charging_station.src.domain.entities.rating import Rating
+from charging_station.src.domain.entities.rating import Rating
 
 def test_rating_valid_inputs():
     rating = Rating(user_id="user_123", station_id=1, date="2023-01-01", value=5, comment="Great station!")
