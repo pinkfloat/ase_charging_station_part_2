@@ -1,85 +1,47 @@
 # ase_charging_station_part_2
 
-### TODO / Next Tasks:
-#### 1. Rewrite code & commentaries
-- Break down functions into smaller testable pieces
-- Sort and organize files and functions in this domain driven way suggested in the `02_Project_Implementation_with_TDD.pdf` in moodle (so we need to find out which functions belong to which domain and will end up in which file)
-- reimplement functions test driven (so tests first, than the code)
-#### 2. Implement Unit Tests for all functions (if possible)
-- Create boundary checks for new user names and passwords
-- Update create user function to only allow user names with more that 3 or 4 symbols
-- Think about other checks to only allow only certain user names (i.e. only names starting with a letter, excluding weird symbols ...) and passwords (i.e. passwords also need a minimum lentgh of 12 and need to have a big letter, small letter, number and special symbol)
-- Verify by unit tests that your criterias for user name and password must be fullfilled when creating a new user
-- A test coverage of 80% must be achieved -> we need to track the coverage (see python package "coverage")
-#### 3. Define similar criteria for charging station commentaries (i.e. not more than 300 symbols or so) and test them
-#### 4. Create a function to allow the deletion of user profiles
-#### 5. Show the username for a submitted rating on the webpage
-#### 6. Implement functionalities for Garima's more enhanced "Create profile" website test driven (Unit tests first, then code)
-- Perhaps throw out a few fields if you consider them "too many" (but keep in mind that this is a good opportunity to raise our coverage percentage and demonstrate a test driven workflow as this is a big requirement in this project work)
-#### 7. Fix any bugs you might encounter (some are documented below)
-#### 8. Draw flowcharts for use case functions and other requested diagrams
-#### 9. Update the project documentation when we finalize our project
+## Steps to run
 
----
+### 1. Important note:
+The file *firebase.json* is required for this application to run. However, it is not included in this GitHub repository because Firebase requires a Google account linked to a phone number, and this file contains a key associated with that account.
 
-### Known issues:
-#### 1. Bug:
-At present there is a conflict between Dash and flask URL, if an un-authenticated user directly enter /dashboard , flask restrict since it user id is not stored as a session variable. But in Dash config, this type of auth mechanism or session variable does not exist. So now if an user loggs out and afterwards enters "/dashboard/", he is routed to the last logged in state.
+We will provide the file via email.
 
-#### 2. Feature:
-The zoom feature of the map is static, but ideally it should dynamically zoom in when a pincode is searched, sensing the right, left, top, bottom most co-ordinates.
+Please create a folder named *secret* at the root level of the project and place the file inside.
+```bash
+# Linux instructions:
+# cd to this repository
+mkdir secret
+mv <path-to-the-downloaded-file> secret/
+```
 
----
+### 2. Create a virtual environment and activate it:
+```bash
+python -m venv ase-env
+source ./ase-env/bin/activate  # On Linux
+.\ase-env\Scripts\activate # on Windows
+```
 
-### Hints how to use git:
-#### Cloning a repository:
-`git clone \<name of the repo\>`
+### 3. Install dependencies and setup project paths:
+```bash
+pip install .
+```
 
-#### Get the updates that happened on the repo
-`git pull`
+### 4. Run tests:
+```bash
+pytest
+```
 
-#### Adding stuff to git
-`git add \<file-name\>`
-`git add -u` add everything that was changed
+### 5. Calculate Test Coverate
+```bash
+coverage run -m pytest
+coverage report
+```
 
-#### Undo add
-`git reset \<file-name\>` or
-`git reset` reset everything you planned to add so far
+### 6. Start the Flask app:
+```bash
+python main.py
+```
 
-#### Show adding / reset status
-`git status`
-
-#### Stage a version of your files
-`git commit`
-`git commit -m "text of the commit message"`
-`git commit -m "text of the commit message" -m "more deeply description"`
-`git commit --amend --no-edit` if you made a small mistake with you last commit and want to fix it
-you can use `--amend` to change the last commit and add `--no-edit` if you want to keep the old commit
-message
-
-#### Pushing the commit online to github
-`git push`
-`git push --force` is needed if you overwrite something you already pushed
-
-#### Creating your branch
-`git branch \<branch_name\>`
-Switch to the branch
-`git checkout \<branch_name\>`
-
-#### Getting updates of other group members
-`git pull` to get updates of the branch you are currently working on
-`git fetch --all --prune` to update everything
-
-#### Putting your own branch on the newest version of another branch
-`git rebase \<branch_name\>`
-`git rebase main` you probably want to rebase on main...
-
-#### In case of rebase/merge conflict
-First: resolving the conflict in the editor and saving the file
-`git add` of the file to stage the changes
-`git rebase --continue`
-`git merge --continue`
-And then you have to type a new commit message.
-
-#### Showing a list of all commits on your branch
-`git log`
+### 7. Open webapp in browser:
+`http://127.0.0.1:5000`
