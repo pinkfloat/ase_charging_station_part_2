@@ -111,14 +111,6 @@ def login():
     return render_template("LoginPage.html")
 
 
-# Decorator to require login before allowing access to dashboard
-def login_required(func):
-    @wraps(func)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            return redirect(url_for('login'))
-        return func(*args, **kwargs)
-    return decorated_function
 
 # Route to display the dashboard
 @app.route("/dashboard")
@@ -130,8 +122,8 @@ def dashboard():
 # Route to handle user logout
 @app.route("/logout")
 def logout():
-    """Logs the user out by removing user session data."""
     session.pop('user_id', None)
+    session.pop('username', None)
     flash("You have been logged out.", "success")
     return redirect(url_for('login'))
 
