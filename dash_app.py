@@ -7,8 +7,8 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from charging_station.src.application.services.charging_station_service import ChargingStationService
 from charging_station.src.infrastructure.repositories.rated_charging_station_repository import RatedChargingStationRepository
+from charging_station.src.application.services.charging_station_service import ChargingStationService
 
 def create_dash_app(flask_app):
     dash_app = Dash(__name__, server=flask_app, 
@@ -16,7 +16,7 @@ def create_dash_app(flask_app):
                    suppress_callback_exceptions=True)
 
     # Initialize repositories and services
-    station_repository = RatedChargingStationRepository(firebase_secret_json="./secret/firebase.json")
+    station_repository = RatedChargingStationRepository(firebase_secret_json="./secret/firebase.json") # only used for service init
     station_service = ChargingStationService(repository=station_repository)
 
     # Load initial data
@@ -28,7 +28,7 @@ def create_dash_app(flask_app):
         print(f"Error loading station data: {e}")
 
     # Create DataFrame for mapping
-    stations = station_repository.stations
+    stations =  station_service.repository.stations
     df = pd.DataFrame([{
         'stationID': s.station_id,
         'stationName': s.name,

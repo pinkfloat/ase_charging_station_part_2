@@ -8,11 +8,11 @@ from user.src.application.services.user_service import UserService
 from user.src.infrastructure.repositories.user_repository import UserRepository
 
 # Initialize Repositories and Services
-user_repository = UserRepository(firebase_secret_json="./secret/firebase.json")
+user_repository = UserRepository(firebase_secret_json="./secret/firebase.json") # only used for service init
 user_service = UserService(user_repository=user_repository)
 
 # Initialize Firebase through repository (ensures single initialization)
-user_repository.load_from_database()  # This triggers Firebase initialization
+user_service.get_all_users()  # This triggers Firebase initialization
 
 # Import custom application code
 from dash_app import create_dash_app
@@ -33,7 +33,7 @@ def login_required(func):
         
         try:
             # Verify user exists through service
-            user = user_service.user_repository.load_from_database()
+            user = user_service.get_all_users()
             user_exists = any(u.id == session['user_id'] for u in user)
             if not user_exists:
                 flash("Session invalid. Please login again.", "error")
@@ -81,7 +81,7 @@ def login():
             users = user_service.get_all_users()
             for user in users:
                 if user.name == username:
-                    if user.password == user_repository.hash_password(password):
+                    if user.password == user_service.user_repository.hash_password(password):
                         session['user_id'] = user.id
                         session['username'] = username
                         return redirect(url_for("dashboard"))
