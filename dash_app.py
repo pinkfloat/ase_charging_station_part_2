@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import random
 
 from bounded_contexts.charging_station.src.application.services.charging_station_service import ChargingStationService
 from bounded_contexts.charging_station.src.infrastructure.repositories.rated_charging_station_repository import RatedChargingStationRepository
@@ -144,11 +143,7 @@ def create_dash_app(flask_app):
         Input('station-map', 'clickData')
     )
     def display_station_details(click_data):
-        def simulate_rush_hours():
-            time_slots = ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", 
-                        "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", 
-                        "4 PM", "5 PM"]
-            return RushHours.generate_random_data(time_slots)
+        
 
         if click_data:
             station_id = click_data['points'][0]['customdata'][0]
@@ -162,10 +157,10 @@ def create_dash_app(flask_app):
                 avg_rating = station.average_rating()
                 
                 # Generate status using domain value object
-                random_status = Status.get_random_status()
+                random_status = station.status
                 
                 # Generate rush hours data
-                rush_data = simulate_rush_hours()
+                rush_data = station.rush_hour_data
                 
                 # Create details components
                 details = html.Div([
