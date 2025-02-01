@@ -1,5 +1,6 @@
 # user/src/application/services/user_service.py
 from user.src.infrastructure.repositories.user_repository import UserRepository
+from user.src.domain.entities.user import User
 
 class UserService:
     def __init__(self, user_repository: UserRepository, event_publisher=None):
@@ -9,13 +10,13 @@ class UserService:
         self.user_repository = user_repository
         self.user_repository.event_publisher = event_publisher or (lambda event: None)
     
-    def get_all_users(self):
+    def get_all_users(self) -> list:
         """
         Loads and returns all users from the database.
         """
         return self.user_repository.load_from_database()
 
-    def create_user(self, username, password):
+    def create_user(self, username: str, password: str) -> User:
         """
         Creates a new user and saves it to the database.
         """

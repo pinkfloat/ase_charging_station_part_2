@@ -1,11 +1,12 @@
 # charging_station/src/infrastructure/repositories/rating_repository.py
+from typing import List
 from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials, initialize_app, db
 from charging_station.src.domain.entities.rating import Rating
 
 class RatingRepository:
-    def __init__(self, firebase_secret_json):
+    def __init__(self, firebase_secret_json: str) -> None:
         """
         Initializes the RatingRepository, sets up Firebase connection using the provided secret JSON file.
         """
@@ -16,9 +17,9 @@ class RatingRepository:
             })
         
         self.station_ratings_ref = db.reference("ratings")
-        self.station_ratings = []
+        self.station_ratings: List[Rating] = []
     
-    def load_station_ratings_from_database(self):
+    def load_station_ratings_from_database(self) -> List[Rating]:
         """
         Loads all station ratings from the Firebase database and returns them as Rating objects.
         """
@@ -35,7 +36,7 @@ class RatingRepository:
             self.station_ratings.append(rating)
         return self.station_ratings
 
-    def create_rating(self, user_id, station_id, value, comment):
+    def create_rating(self, user_id: str, station_id: int, value: int, comment: str) -> Rating:
         """
         Generates a new rating object.
         """
@@ -48,7 +49,7 @@ class RatingRepository:
         )
         return rating
     
-    def save_rating_to_repo(self, rating):
+    def save_rating_to_repo(self, rating: Rating) -> None:
         """
         Appends the rating on the repository rating list.
         """
@@ -56,7 +57,7 @@ class RatingRepository:
             raise ValueError("Invalid rating object")
         self.station_ratings.append(rating)
 
-    def save_rating_to_database(self, rating):
+    def save_rating_to_database(self, rating: Rating) -> None:
         """
         Saves a new rating to the database.
         """

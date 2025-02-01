@@ -3,7 +3,7 @@ import re
 from datetime import datetime
 
 class Rating:
-    def __init__(self, user_id, station_id, date, value, comment=""):
+    def __init__(self, user_id: str, station_id: int, date: str, value: int, comment: str = "") -> None:
         """
         Initializes a Rating entity.
         """
@@ -22,8 +22,8 @@ class Rating:
         except ValueError:
             raise ValueError("Date must be in ISO 8601 format")
         
-        self.user_id = user_id
-        self.station_id = station_id
-        self.date = date
-        self.value = value
-        self.comment = comment
+        self.user_id: str = user_id
+        self.station_id: int = station_id
+        self.date: str = date
+        self.value: int = value
+        self.comment: str = comment

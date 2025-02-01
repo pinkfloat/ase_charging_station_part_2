@@ -2,16 +2,17 @@
 from charging_station.src.infrastructure.repositories.charging_station_repository import ChargingStationRepository
 from charging_station.src.infrastructure.repositories.rating_repository import RatingRepository
 from charging_station.src.domain.entities.rating import Rating
+from charging_station.src.domain.aggregates.rated_charging_station import RatedChargingStation
 
 class RatedChargingStationRepository(ChargingStationRepository, RatingRepository):
-    def __init__(self, firebase_secret_json):
+    def __init__(self, firebase_secret_json: str) -> None:
         """
         Initializes the RatedChargingStationRepository, sets up Firebase connection using the provided secret JSON file.
         """
         ChargingStationRepository.__init__(self)
         RatingRepository.__init__(self, firebase_secret_json)
 
-    def add_rating_to_station(self, rating):
+    def add_rating_to_station(self, rating: Rating) -> None:
         """
         Adds a single rating to the ChargingStation with a matching station_id.
         """
@@ -20,7 +21,7 @@ class RatedChargingStationRepository(ChargingStationRepository, RatingRepository
                 station.add_rating(rating)
                 break
 
-    def add_all_ratings_to_stations(self):
+    def add_all_ratings_to_stations(self) -> None:
         """
         Loops through all ratings and assigns them to their corresponding ChargingStations.
         """

@@ -2,15 +2,15 @@
 from charging_station.src.domain.entities.rating import Rating
 
 class RatingAddedEvent:
-    def __init__(self, rating):
+    def __init__(self, rating: Rating) -> None:
         """
         Represents an event when a rating is added to a charging station.
         """
         if not isinstance(rating, Rating):
             raise TypeError("rating must be an instance of Rating")
-        self.rating = rating
+        self.rating: Rating = rating
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Returns a string representation of the RatingAddedEvent.
         """

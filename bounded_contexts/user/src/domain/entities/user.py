@@ -3,7 +3,7 @@ import re
 from datetime import datetime
 
 class User:
-    def __init__(self, id, name, password, date_joined):
+    def __init__(self, id: str, name: str, password: str, date_joined: str):
         """
         Initializes a User entity with the provided details. Validates the user ID format,
         checks that name and password are not empty, and ensures the date_joined is in ISO 8601 format.

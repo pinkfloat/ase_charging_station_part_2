@@ -1,5 +1,6 @@
 # charging_station/src/infrastructure/repositories/charging_station_repository.py
 import pandas as pd
+from typing import List, Optional
 from charging_station.src.domain.aggregates.rated_charging_station import RatedChargingStation
 from charging_station.src.domain.value_objects.location import Location
 from charging_station.src.domain.value_objects.postal_code import PostalCode
@@ -7,15 +8,15 @@ from charging_station.src.domain.value_objects.status import Status
 from charging_station.src.domain.value_objects.rush_hours import RushHours
 
 class ChargingStationRepository:
-    REQUIRED_COLUMNS = ['stationID', 'stationName', 'stationOperator', 'KW', 'Latitude', 'Longitude', 'PLZ']
+    REQUIRED_COLUMNS: List[str] = ['stationID', 'stationName', 'stationOperator', 'KW', 'Latitude', 'Longitude', 'PLZ']
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initializes the ChargingStationRepository.
         """
-        self.stations = []
+        self.stations: List[RatedChargingStation] = []
 
-    def load_stations_from_csv(self, csv_file, event_publisher=None):
+    def load_stations_from_csv(self, csv_file: str, event_publisher: Optional[callable] = None) -> List[RatedChargingStation]:
         """
         Loads charging stations from a CSV file, validates columns, 
         and creates a list of ChargingStation objects.
