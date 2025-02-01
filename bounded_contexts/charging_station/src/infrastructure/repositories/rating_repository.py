@@ -1,12 +1,13 @@
 # charging_station/src/infrastructure/repositories/rating_repository.py
 from datetime import datetime
+import firebase_admin
 from firebase_admin import credentials, initialize_app, db
 from bounded_contexts.charging_station.src.domain.entities.rating import Rating
 
 class RatingRepository:
     def __init__(self, firebase_secret_json):
         # Initialize Firebase only once
-        if not db._apps:  # Check if Firebase is already initialized
+        if not firebase_admin._apps:  # Check if Firebase is already initialized
             cred = credentials.Certificate(firebase_secret_json)
             initialize_app(cred, {
                 'databaseURL': 'https://ase-charging-default-rtdb.europe-west1.firebasedatabase.app/'

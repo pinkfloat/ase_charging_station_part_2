@@ -1,2 +1,6 @@
 ase-env/
 secret/
+.pytest_cache/
+__pycache__/
+*.pyc
+bounded_contexts/chargehub_berlin.egg-info/

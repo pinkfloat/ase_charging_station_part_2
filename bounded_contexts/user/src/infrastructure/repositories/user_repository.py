@@ -1,4 +1,5 @@
 # user/src/infrastructure/repositories/user_repository.py
+import firebase_admin
 from firebase_admin import credentials, initialize_app, db
 from datetime import datetime
 import hashlib
@@ -9,7 +10,7 @@ from bounded_contexts.user.src.domain.events.user_created_event import UserCreat
 class UserRepository:
     def __init__(self, firebase_secret_json, event_publisher=None):
         # Initialize Firebase only once
-        if not db._apps:  # Check if Firebase is already initialized
+        if not firebase_admin._apps:  # Check if Firebase is already initialized
             cred = credentials.Certificate(firebase_secret_json)
             initialize_app(cred, {
                 'databaseURL': 'https://ase-charging-default-rtdb.europe-west1.firebasedatabase.app/'
