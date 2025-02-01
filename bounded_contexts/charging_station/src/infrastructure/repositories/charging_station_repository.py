@@ -14,6 +14,7 @@ class ChargingStationRepository:
 
     def load_stations_from_csv(self, csv_file, event_publisher=None):
         df = pd.read_csv(csv_file)
+        df['stationName'] = df['stationName'].fillna("Unknown")
 
         # Validate that all required columns are present
         missing_columns = [col for col in self.REQUIRED_COLUMNS if col not in df.columns]
