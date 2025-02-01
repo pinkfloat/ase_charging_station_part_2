@@ -4,3 +4,4 @@ secret/
 __pycache__/
 *.pyc
 bounded_contexts/chargehub_berlin.egg-info/
+.coverage
