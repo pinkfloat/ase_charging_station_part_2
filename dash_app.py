@@ -2,20 +2,46 @@ from dash import Dash, dcc, html, Input, Output, State
 from datetime import datetime
 from enum import Enum
 from flask import session
-from firebase_admin import db
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import random
 
-def create_dash_app(flask_app):
-    """Sets up the Dash app and links it to the Flask app."""
-    dash_app = Dash(__name__, server=flask_app, url_base_pathname='/dashboard/', suppress_callback_exceptions=True)
+from bounded_contexts.charging_station.src.application.services.charging_station_service import ChargingStationService
+from bounded_contexts.charging_station.src.infrastructure.repositories.rated_charging_station_repository import RatedChargingStationRepository
+from bounded_contexts.charging_station.src.domain.value_objects.status import Status
+from bounded_contexts.charging_station.src.domain.value_objects.rush_hours import RushHours
 
-    # Load charging station data from CSV file
-    df = pd.read_csv('./data/ChargingStationData.csv', usecols=['stationID','stationName', 'stationOperator', 'PLZ', 'Latitude', 'Longitude', 'KW'])
-    df['PLZ'] = df['PLZ'].astype(str)
+
+def create_dash_app(flask_app):
+    dash_app = Dash(__name__, server=flask_app, 
+                   url_base_pathname='/dashboard/', 
+                   suppress_callback_exceptions=True)
+
+    # Initialize repositories and services
+    station_repository = RatedChargingStationRepository(firebase_secret_json="./secret/firebase.json")
+    station_service = ChargingStationService(repository=station_repository)
+
+    # Load initial data
+    try:
+        station_service.load_stations_from_csv(r'bounded_contexts\charging_station\src\infrastructure\data\ChargingStationData.csv')
+                                        
+        station_service.load_all_ratings_to_stations()
+    except Exception as e:
+        print(f"Error loading station data: {e}")
+
+    # Create DataFrame for mapping
+    stations = station_repository.stations
+    df = pd.DataFrame([{
+        'stationID': s.station_id,
+        'stationName': s.name,
+        'stationOperator': s.operator,
+        'KW': s.power,
+        'Latitude': s.location.latitude,
+        'Longitude': s.location.longitude,
+        'PLZ': s.postal_code.plz
+    } for s in stations])
 
     # Layout
 
