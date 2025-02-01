@@ -8,6 +8,8 @@ from bounded_contexts.user.src.domain.events.user_created_event import UserCreat
 from bounded_contexts.user.src.domain.entities.user import User
 
 import firebase_admin
+from firebase_admin import credentials
+
 
 @pytest.fixture
 def mock_database(monkeypatch):
@@ -196,3 +198,108 @@ def test_hash_password(mock_database, monkeypatch):
 
     expected_hash = hashlib.sha256(password.encode()).hexdigest()
     assert hashed == expected_hash
+
+
+
+
+
+## new additional test cases
+
+
+
+def test_firebase_initialization_when_not_initialized(monkeypatch):
+    """
+    Test that when no Firebase app is initialized (firebase_admin._apps is empty),
+    the repository initializes Firebase using the provided certificate and settings.
+    """
+    monkeypatch.setattr(firebase_admin, '_apps', [])
+
+    fake_cert = MagicMock(name="FakeCertificate")
+    fake_initialize_app = MagicMock(name="initialize_app")
+
+    monkeypatch.setattr(credentials, 'Certificate', lambda path: fake_cert)
+    monkeypatch.setattr(
+        "bounded_contexts.user.src.infrastructure.repositories.user_repository.initialize_app",
+        fake_initialize_app
+    )
+    monkeypatch.setattr(firebase_admin, 'get_app', lambda name="[DEFAULT]": MagicMock())
+
+    firebase_secret_json = "path/to/fake/firebase_secret.json"
+    _ = UserRepository(firebase_secret_json)
+
+    fake_initialize_app.assert_called_once_with(
+        fake_cert,
+        {'databaseURL': 'https://ase-charging-default-rtdb.europe-west1.firebasedatabase.app/'}
+    )
+
+
+
+
+
+
+def test_firebase_initialization_skipped_when_already_initialized(monkeypatch):
+    """
+    Test that Firebase initialization is skipped when an app is already initialized.
+    """
+    # Simulate an initialized Firebase app
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
+
+    # Mock initialize_app to verify it is NOT called
+    fake_initialize_app = MagicMock(name="initialize_app")
+    monkeypatch.setattr(
+        "bounded_contexts.user.src.infrastructure.repositories.user_repository.initialize_app",
+        fake_initialize_app
+    )
+
+    # Mock get_app to return a dummy app to prevent ValueError
+    monkeypatch.setattr(firebase_admin, 'get_app', lambda name="[DEFAULT]": MagicMock())
+
+    # Trigger the UserRepository initialization
+    _ = UserRepository("mocked_path")
+
+    # Assert that initialize_app was NOT called since an app already exists
+    fake_initialize_app.assert_not_called()
+
+
+
+
+def test_firebase_initialization_failure(monkeypatch):
+    """
+    Test that an exception is raised if Firebase initialization fails.
+    """
+    monkeypatch.setattr(firebase_admin, '_apps', [])
+
+    fake_cert = MagicMock(name="FakeCertificate")
+
+    # Simulate an exception during initialization
+    def fake_initialize_app_failure(*args, **kwargs):
+        raise RuntimeError("Firebase initialization failed!")
+
+    monkeypatch.setattr(credentials, 'Certificate', lambda path: fake_cert)
+    monkeypatch.setattr(
+        "bounded_contexts.user.src.infrastructure.repositories.user_repository.initialize_app",
+        fake_initialize_app_failure
+    )
+
+    with pytest.raises(RuntimeError, match="Firebase initialization failed!"):
+        _ = UserRepository("path/to/fake/firebase_secret.json")
+
+def test_firebase_initialization_invalid_certificate(monkeypatch):
+    """
+    Test behavior when an invalid Firebase certificate path causes an error.
+    """
+    monkeypatch.setattr(firebase_admin, '_apps', [])
+
+    # Simulate an error when trying to load an invalid certificate
+    def fake_certificate_failure(path):
+        raise FileNotFoundError("Invalid Firebase certificate path!")
+
+    fake_initialize_app = MagicMock(name="initialize_app")
+    monkeypatch.setattr(credentials, 'Certificate', fake_certificate_failure)
+    monkeypatch.setattr(
+        "bounded_contexts.user.src.infrastructure.repositories.user_repository.initialize_app",
+        fake_initialize_app
+    )
+
+    with pytest.raises(FileNotFoundError, match="Invalid Firebase certificate path!"):
+        _ = UserRepository("invalid/path/to/firebase_secret.json")

@@ -5,6 +5,11 @@ from bounded_contexts.charging_station.src.infrastructure.repositories.rating_re
 
 import firebase_admin
 
+
+from unittest.mock import MagicMock
+from firebase_admin import credentials
+
+
 @pytest.fixture
 def mock_database(monkeypatch):
     """Mock the Firebase database using monkeypatch."""
@@ -156,3 +161,46 @@ def test_save_invalid_rating_to_database(mock_database, monkeypatch):
     
     with pytest.raises(ValueError, match="Invalid rating object"):
         repo.save_rating_to_database(invalid_rating)
+
+
+
+
+## new additional test cases
+
+def test_firebase_initialization_when_not_initialized(monkeypatch):
+    """
+    Test that when no Firebase app is initialized (firebase_admin._apps is empty),
+    the repository initializes Firebase using the provided certificate and settings.
+    """
+    # Simulate that no Firebase app is initialized.
+    monkeypatch.setattr(firebase_admin, '_apps', [])
+
+    # Create a fake certificate object and a fake initialize_app function.
+    fake_cert = MagicMock(name="FakeCertificate")
+    fake_initialize_app = MagicMock(name="initialize_app")
+
+    # Patch credentials.Certificate to return our fake_cert.
+    monkeypatch.setattr(credentials, 'Certificate', lambda path: fake_cert)
+
+    # Patch initialize_app in the repository's module namespace.
+    # Note: Adjust the import path if necessary.
+    monkeypatch.setattr(
+        "bounded_contexts.charging_station.src.infrastructure.repositories.rating_repository.initialize_app",
+        fake_initialize_app
+    )
+
+    # Patch firebase_admin.get_app to return a dummy app after initialization,
+    # so that subsequent calls (e.g. db.reference) don't fail.
+    monkeypatch.setattr(firebase_admin, 'get_app', lambda name="[DEFAULT]": MagicMock())
+
+    # Provide a fake firebase_secret_json path.
+    firebase_secret_json = "path/to/firebase_secret.json"
+
+    # Instantiating the repository should trigger the Firebase initialization.
+    _ = RatingRepository(firebase_secret_json)
+
+    # Verify that our fake_initialize_app was called with the fake_cert and the expected databaseURL.
+    fake_initialize_app.assert_called_once_with(
+        fake_cert,
+        {'databaseURL': 'https://ase-charging-default-rtdb.europe-west1.firebasedatabase.app/'}
+    )
