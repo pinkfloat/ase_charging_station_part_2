@@ -86,21 +86,17 @@ def create_profile():
 # Route to handle user login
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """Handles user login, verifying username and password."""
     if request.method == "POST":
         username = request.form["username"].strip()
         password = request.form["password"].strip()
-        hashed_password = hash_password(password)
 
         try:
-            users_ref = db.reference("users")
-            users = users_ref.get() or {}
-            
-            for user_id, user_data in users.items():
-                if user_data["username"] == username:
-                    if user_data["password"] == hashed_password:
-                        session['user_id'] = user_id
-                        session['username'] = username  # Store username in session
+            users = user_service.get_all_users()
+            for user in users:
+                if user.name == username:
+                    if user.password == user_repository.hash_password(password):
+                        session['user_id'] = user.id
+                        session['username'] = username
                         return redirect(url_for("dashboard"))
                     else:
                         flash("Incorrect password. Please try again.", "error")
@@ -109,10 +105,11 @@ def login():
             flash("Username not found. Please sign up first.", "error")
             return redirect(url_for("create_profile"))
         except Exception as e:
-            flash(f"Error logging in: {e}", "error")
+            flash(f"Login error: {e}", "error")
             return redirect(url_for("login"))
 
     return render_template("LoginPage.html")
+
 
 # Decorator to require login before allowing access to dashboard
 def login_required(func):
