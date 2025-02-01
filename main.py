@@ -3,7 +3,6 @@ from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from functools import wraps
 
-
 # Import domain services and repositories
 from user.src.application.services.user_service import UserService
 from user.src.infrastructure.repositories.user_repository import UserRepository
@@ -15,8 +14,6 @@ user_service = UserService(user_repository=user_repository)
 # Initialize Firebase through repository (ensures single initialization)
 user_repository.load_from_database()  # This triggers Firebase initialization
 
-
-
 # Import custom application code
 from dash_app import create_dash_app
 
@@ -24,11 +21,8 @@ from dash_app import create_dash_app
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Used for flashing messages
 
-
-
 # Initialize Dash app
 create_dash_app(app) # Create and link the Dash app to the Flask app
-
 
 # Authentication decorator using UserService
 def login_required(func):
@@ -51,16 +45,10 @@ def login_required(func):
         return func(*args, **kwargs)
     return decorated_function
 
-
-
-
-
-
 # Route to display the home page
 @app.route("/")
 def index():
     return render_template("index.html")
-
 
 # Route to create a new user profile
 @app.route("/create-profile", methods=["GET", "POST"])
@@ -81,7 +69,6 @@ def create_profile():
         return redirect(url_for("create_profile"))
 
     return render_template("CreateProfile_new.html")
-
 
 # Route to handle user login
 @app.route("/login", methods=["GET", "POST"])
@@ -109,8 +96,6 @@ def login():
             return redirect(url_for("login"))
 
     return render_template("LoginPage.html")
-
-
 
 # Route to display the dashboard
 @app.route("/dashboard")

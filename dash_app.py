@@ -9,9 +9,6 @@ import plotly.graph_objects as go
 
 from charging_station.src.application.services.charging_station_service import ChargingStationService
 from charging_station.src.infrastructure.repositories.rated_charging_station_repository import RatedChargingStationRepository
-from charging_station.src.domain.value_objects.status import Status
-from charging_station.src.domain.value_objects.rush_hours import RushHours
-
 
 def create_dash_app(flask_app):
     dash_app = Dash(__name__, server=flask_app, 
@@ -143,8 +140,6 @@ def create_dash_app(flask_app):
         Input('station-map', 'clickData')
     )
     def display_station_details(click_data):
-        
-
         if click_data:
             station_id = click_data['points'][0]['customdata'][0]
             
