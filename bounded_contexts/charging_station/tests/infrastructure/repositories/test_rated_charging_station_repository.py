@@ -8,6 +8,8 @@ from charging_station.src.domain.value_objects.postal_code import PostalCode
 from charging_station.src.domain.value_objects.status import Status
 from charging_station.src.domain.value_objects.rush_hours import RushHours
 
+import firebase_admin  # Add this import
+
 @pytest.fixture
 def mock_database(monkeypatch):
     """Mock the Firebase database using monkeypatch."""
@@ -52,7 +54,10 @@ def mock_database(monkeypatch):
 
 
 @pytest.fixture
-def mock_repository(mock_database):
+def mock_repository(mock_database, monkeypatch):
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
+    
     repo = RatedChargingStationRepository("mocked_path")
 
     # Add mock stations

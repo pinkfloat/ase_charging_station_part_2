@@ -6,6 +6,6 @@ setup(
     packages=find_packages(where="bounded_contexts"),
     package_dir={"": "bounded_contexts"},
     install_requires=[
-        'dash', 'firebase-admin', 'flask', 'numpy', 'openpyxl', 'pandas', 'plotly', 'pytest', 'geopandas'
+        'dash', 'firebase-admin', 'flask', 'numpy', 'openpyxl', 'pandas', 'plotly', 'pytest', 'geopandas', 'coverage'
     ],
 )

@@ -57,3 +57,26 @@ def test_load_stations_from_csv_missing_columns():
 
     with pytest.raises(ValueError, match="Missing required columns: stationOperator, PLZ"):
         repo.load_stations_from_csv(mock_csv_data)
+
+def test_load_stations_from_csv_nan_replacement():
+    repo = ChargingStationRepository()
+
+    csv_data = """stationID,stationName,stationOperator,KW,Latitude,Longitude,PLZ
+1,Station A,Operator X,50.0,52.60806,13.3044,13467
+2,,Operator Y,100.0,52.6117,13.30914,13467
+3,Station C,Operator Z,75.0,52.61259,13.30969,13467
+4,,Operator W,60.0,52.61500,13.31000,13467
+"""
+    mock_csv_data = StringIO(csv_data)
+    stations = repo.load_stations_from_csv(mock_csv_data)
+
+    # Ensure all stations were loaded
+    assert len(stations) == 4
+
+    # Check that missing station names were replaced with "Unknown"
+    assert stations[1].name == "Unknown"
+    assert stations[3].name == "Unknown"
+
+    # Ensure other station names remain unchanged
+    assert stations[0].name == "Station A"
+    assert stations[2].name == "Station C"

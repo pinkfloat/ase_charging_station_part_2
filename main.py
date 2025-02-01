@@ -1,9 +1,17 @@
 # Import standard libraries
-from datetime import datetime
-from firebase_admin import credentials, initialize_app, db
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from functools import wraps
-import hashlib
+
+# Import domain services and repositories
+from user.src.application.services.user_service import UserService
+from user.src.infrastructure.repositories.user_repository import UserRepository
+
+# Initialize Repositories and Services
+user_repository = UserRepository(firebase_secret_json="./secret/firebase.json") # only used for service init
+user_service = UserService(user_repository=user_repository)
+
+# Initialize Firebase through repository (ensures single initialization)
+user_service.get_all_users()  # This triggers Firebase initialization
 
 # Import custom application code
 from dash_app import create_dash_app
@@ -12,18 +20,29 @@ from dash_app import create_dash_app
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Used for flashing messages
 
-# Initialize Database
-cred = credentials.Certificate("./secret/firebase.json")  # Make sure the secret key is placed here
-initialize_app(cred, {
-    'databaseURL': 'https://ase-charging-default-rtdb.europe-west1.firebasedatabase.app/'
-})
-
 # Initialize Dash app
 create_dash_app(app) # Create and link the Dash app to the Flask app
 
-# Function to hash passwords for security
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
+# Authentication decorator using UserService
+def login_required(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+        
+        try:
+            # Verify user exists through service
+            user = user_service.get_all_users()
+            user_exists = any(u.id == session['user_id'] for u in user)
+            if not user_exists:
+                flash("Session invalid. Please login again.", "error")
+                return redirect(url_for('logout'))
+        except Exception as e:
+            flash(f"Authentication error: {e}", "error")
+            return redirect(url_for('logout'))
+            
+        return func(*args, **kwargs)
+    return decorated_function
 
 # Route to display the home page
 @app.route("/")
@@ -33,55 +52,37 @@ def index():
 # Route to create a new user profile
 @app.route("/create-profile", methods=["GET", "POST"])
 def create_profile():
-    """Handles the creation of a new user profile, including username and password."""
     if request.method == "POST":
         username = request.form["username"].strip()
         password = request.form["password"].strip()
-        hashed_password = hash_password(password)
 
         try:
-            users_ref = db.reference("users")
-            users = users_ref.get() or {}
-            
-            # Check if username already exists
-            for user_id, user_data in users.items():
-                if user_data["username"] == username:
-                    flash("Username already exists. Please choose another.", "error")
-                    return redirect(url_for("create_profile"))
-
-            # Create new user
-            user_id = f"user_{len(users) + 1}"
-            users_ref.child(user_id).set({
-                "username": username,
-                "password": hashed_password,
-                "date_joined": datetime.now().isoformat()
-            })
+            user = user_service.create_user(username, password)
             flash(f"User {username} signed up successfully!", "success")
             return redirect(url_for("login"))
+        except ValueError as e:
+            flash(str(e), "error")
         except Exception as e:
-            flash(f"Error signing up: {e}", "error")
-            return redirect(url_for("create_profile"))
+            flash(f"Error creating user: {e}", "error")
+        
+        return redirect(url_for("create_profile"))
 
-    return render_template("CreateProfile.html")
+    return render_template("CreateProfile_new.html")
 
 # Route to handle user login
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """Handles user login, verifying username and password."""
     if request.method == "POST":
         username = request.form["username"].strip()
         password = request.form["password"].strip()
-        hashed_password = hash_password(password)
 
         try:
-            users_ref = db.reference("users")
-            users = users_ref.get() or {}
-            
-            for user_id, user_data in users.items():
-                if user_data["username"] == username:
-                    if user_data["password"] == hashed_password:
-                        session['user_id'] = user_id
-                        session['username'] = username  # Store username in session
+            users = user_service.get_all_users()
+            for user in users:
+                if user.name == username:
+                    if user.password == user_service.user_repository.hash_password(password):
+                        session['user_id'] = user.id
+                        session['username'] = username
                         return redirect(url_for("dashboard"))
                     else:
                         flash("Incorrect password. Please try again.", "error")
@@ -90,19 +91,10 @@ def login():
             flash("Username not found. Please sign up first.", "error")
             return redirect(url_for("create_profile"))
         except Exception as e:
-            flash(f"Error logging in: {e}", "error")
+            flash(f"Login error: {e}", "error")
             return redirect(url_for("login"))
 
     return render_template("LoginPage.html")
-
-# Decorator to require login before allowing access to dashboard
-def login_required(func):
-    @wraps(func)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            return redirect(url_for('login'))
-        return func(*args, **kwargs)
-    return decorated_function
 
 # Route to display the dashboard
 @app.route("/dashboard")
@@ -114,8 +106,8 @@ def dashboard():
 # Route to handle user logout
 @app.route("/logout")
 def logout():
-    """Logs the user out by removing user session data."""
     session.pop('user_id', None)
+    session.pop('username', None)
     flash("You have been logged out.", "success")
     return redirect(url_for('login'))
 

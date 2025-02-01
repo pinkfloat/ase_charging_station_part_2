@@ -3,6 +3,13 @@ import pytest
 from charging_station.src.domain.entities.rating import Rating
 from charging_station.src.infrastructure.repositories.rating_repository import RatingRepository
 
+import firebase_admin
+
+
+from unittest.mock import MagicMock
+from firebase_admin import credentials
+
+
 @pytest.fixture
 def mock_database(monkeypatch):
     """Mock the Firebase database using monkeypatch."""
@@ -45,7 +52,10 @@ def mock_database(monkeypatch):
     monkeypatch.setattr("charging_station.src.infrastructure.repositories.rating_repository.db", mock_db)
     return mock_db
 
-def test_load_station_ratings_from_database(mock_database):
+def test_load_station_ratings_from_database(mock_database, monkeypatch):
+
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = RatingRepository("mocked_path")
     ratings = repo.load_station_ratings_from_database()
 
@@ -74,12 +84,16 @@ def test_load_station_ratings_from_empty_database(monkeypatch):
             return {}
 
     monkeypatch.setattr("charging_station.src.infrastructure.repositories.rating_repository.db", EmptyFirebaseDB())
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = RatingRepository("mocked_path")
     ratings = repo.load_station_ratings_from_database()
 
     assert len(ratings) == 0
 
-def test_create_rating(mock_database):
+def test_create_rating(mock_database, monkeypatch):
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = RatingRepository("mocked_path")
 
     user_id = "user_123"
@@ -95,7 +109,9 @@ def test_create_rating(mock_database):
     assert station.value == value
     assert station.comment == comment
 
-def test_save_rating_to_repo(mock_database):
+def test_save_rating_to_repo(mock_database, monkeypatch):
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = RatingRepository("mocked_path")
 
     rating = Rating("user_123", 4, "2023-01-01T12:00:00", 2, "Urks")
@@ -104,7 +120,9 @@ def test_save_rating_to_repo(mock_database):
     assert len(repo.station_ratings) == 1
     assert repo.station_ratings[0] == rating
 
-def test_save_invalid_rating_to_repo(mock_database):
+def test_save_invalid_rating_to_repo(mock_database, monkeypatch):
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = RatingRepository("mocked_path")
 
     invalid_rating = "This is not a valid rating"
@@ -112,7 +130,9 @@ def test_save_invalid_rating_to_repo(mock_database):
     with pytest.raises(ValueError, match="Invalid rating object"):
         repo.save_rating_to_repo(invalid_rating)
 
-def test_save_rating_to_database(mock_database):
+def test_save_rating_to_database(mock_database, monkeypatch):
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = RatingRepository("mocked_path")
 
     rating = Rating("user_789", 3, "2025-01-03T10:00:00", 5, "Fantastic station!")
@@ -125,7 +145,10 @@ def test_save_rating_to_database(mock_database):
     assert saved_rating["review_text"] == "Fantastic station!"
     assert saved_rating["review_date"] == "2025-01-03T10:00:00"
 
-def test_save_invalid_rating_to_database(mock_database):
+def test_save_invalid_rating_to_database(mock_database, monkeypatch):
+
+    # Prevent Firebase from initializing by faking existing apps
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
     repo = RatingRepository("mocked_path")
 
     invalid_rating = {
@@ -138,3 +161,46 @@ def test_save_invalid_rating_to_database(mock_database):
     
     with pytest.raises(ValueError, match="Invalid rating object"):
         repo.save_rating_to_database(invalid_rating)
+
+
+
+
+## new additional test cases
+
+def test_firebase_initialization_when_not_initialized(monkeypatch):
+    """
+    Test that when no Firebase app is initialized (firebase_admin._apps is empty),
+    the repository initializes Firebase using the provided certificate and settings.
+    """
+    # Simulate that no Firebase app is initialized.
+    monkeypatch.setattr(firebase_admin, '_apps', [])
+
+    # Create a fake certificate object and a fake initialize_app function.
+    fake_cert = MagicMock(name="FakeCertificate")
+    fake_initialize_app = MagicMock(name="initialize_app")
+
+    # Patch credentials.Certificate to return our fake_cert.
+    monkeypatch.setattr(credentials, 'Certificate', lambda path: fake_cert)
+
+    # Patch initialize_app in the repository's module namespace.
+    # Note: Adjust the import path if necessary.
+    monkeypatch.setattr(
+        "charging_station.src.infrastructure.repositories.rating_repository.initialize_app",
+        fake_initialize_app
+    )
+
+    # Patch firebase_admin.get_app to return a dummy app after initialization,
+    # so that subsequent calls (e.g. db.reference) don't fail.
+    monkeypatch.setattr(firebase_admin, 'get_app', lambda name="[DEFAULT]": MagicMock())
+
+    # Provide a fake firebase_secret_json path.
+    firebase_secret_json = "path/to/firebase_secret.json"
+
+    # Instantiating the repository should trigger the Firebase initialization.
+    _ = RatingRepository(firebase_secret_json)
+
+    # Verify that our fake_initialize_app was called with the fake_cert and the expected databaseURL.
+    fake_initialize_app.assert_called_once_with(
+        fake_cert,
+        {'databaseURL': 'https://ase-charging-default-rtdb.europe-west1.firebasedatabase.app/'}
+    )

@@ -7,3 +7,4 @@ pandas
 plotly
 pytest
 geopandas
+coverage

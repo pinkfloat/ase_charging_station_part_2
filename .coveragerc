@@ -1,0 +1,19 @@
+[run]
+omit =
+    */tests/*
+    */venv/*
+    */img/*
+    */tools/*
+    */static/*
+    */templates/*
+    */bounded_contexts/*/tests/*
+    pytest.ini
+    setup.py
+    requirement.txt
+    *.ipynb
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise NotImplementedError
