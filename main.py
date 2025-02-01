@@ -1,9 +1,21 @@
 # Import standard libraries
 from datetime import datetime
-from firebase_admin import credentials, initialize_app, db
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from functools import wraps
-import hashlib
+
+
+# Import domain services and repositories
+from bounded_contexts.user.src.application.services.user_service import UserService
+from bounded_contexts.user.src.infrastructure.repositories.user_repository import UserRepository
+
+# Initialize Repositories and Services
+user_repository = UserRepository(firebase_secret_json="./secret/firebase.json")
+user_service = UserService(user_repository=user_repository)
+
+# Initialize Firebase through repository (ensures single initialization)
+user_repository.load_from_database()  # This triggers Firebase initialization
+
+
 
 # Import custom application code
 from dash_app import create_dash_app
@@ -12,18 +24,10 @@ from dash_app import create_dash_app
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Used for flashing messages
 
-# Initialize Database
-cred = credentials.Certificate("./secret/firebase.json")  # Make sure the secret key is placed here
-initialize_app(cred, {
-    'databaseURL': 'https://ase-charging-default-rtdb.europe-west1.firebasedatabase.app/'
-})
+
 
 # Initialize Dash app
 create_dash_app(app) # Create and link the Dash app to the Flask app
-
-# Function to hash passwords for security
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
 
 # Route to display the home page
 @app.route("/")
