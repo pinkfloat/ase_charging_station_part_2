@@ -61,39 +61,27 @@ def login_required(func):
 def index():
     return render_template("index.html")
 
+
 # Route to create a new user profile
 @app.route("/create-profile", methods=["GET", "POST"])
 def create_profile():
-    """Handles the creation of a new user profile, including username and password."""
     if request.method == "POST":
         username = request.form["username"].strip()
         password = request.form["password"].strip()
-        hashed_password = hash_password(password)
 
         try:
-            users_ref = db.reference("users")
-            users = users_ref.get() or {}
-            
-            # Check if username already exists
-            for user_id, user_data in users.items():
-                if user_data["username"] == username:
-                    flash("Username already exists. Please choose another.", "error")
-                    return redirect(url_for("create_profile"))
-
-            # Create new user
-            user_id = f"user_{len(users) + 1}"
-            users_ref.child(user_id).set({
-                "username": username,
-                "password": hashed_password,
-                "date_joined": datetime.now().isoformat()
-            })
+            user = user_service.create_user(username, password)
             flash(f"User {username} signed up successfully!", "success")
             return redirect(url_for("login"))
+        except ValueError as e:
+            flash(str(e), "error")
         except Exception as e:
-            flash(f"Error signing up: {e}", "error")
-            return redirect(url_for("create_profile"))
+            flash(f"Error creating user: {e}", "error")
+        
+        return redirect(url_for("create_profile"))
 
     return render_template("CreateProfile_new.html")
+
 
 # Route to handle user login
 @app.route("/login", methods=["GET", "POST"])
