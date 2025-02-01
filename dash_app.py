@@ -95,27 +95,22 @@ def create_dash_app(flask_app):
     ])
 
     # Callbacks
-
-    # Callback to update the username displayed in the app
     @dash_app.callback(
         Output('username-display', 'children'),
         Input('interval-component', 'n_intervals')
     )
     def update_username(n):
-        """Updates the displayed username."""
         return session.get('username', '')
 
-    # Callback to update the map based on the user's search for charging stations
     @dash_app.callback(
         [Output('station-map', 'figure'),
-        Output('search-message', 'children'),
-        Output('plz-search', 'value')], 
+         Output('search-message', 'children'),
+         Output('plz-search', 'value')],
         [Input('search-button', 'n_clicks'),
-        Input('station-map', 'figure')],
+         Input('station-map', 'figure')],
         State('plz-search', 'value')
     )
     def update_map(n_clicks, current_figure, search_plz):
-        """Filters the data based on the entered postal code and updates the map accordingly."""
         if not search_plz:
             filtered_df = df
             message = ""
@@ -123,7 +118,7 @@ def create_dash_app(flask_app):
             filtered_df = df[df['PLZ'] == search_plz]
             if filtered_df.empty:
                 message = "No data found for the entered Pincode."
-                return current_figure, message, ""  # Return empty string for search box
+                return current_figure, message, ""
             else:
                 message = ""
 
@@ -135,133 +130,127 @@ def create_dash_app(flask_app):
             zoom=15 if search_plz else 10,
             mapbox_style="open-street-map"
         )
-        
-        fig.update_traces(marker=dict(size=15, symbol='circle') if search_plz else dict(size=8, symbol='circle'))
+        fig.update_traces(marker=dict(size=15 if search_plz else 8, symbol='circle'))
         fig.update_layout(margin=dict(l=0, r=0, t=0, b=0))
         
-        return fig, message, ""  # Return empty string for search box
+        return fig, message, ""
 
-    # Callback to display charging station details and reviews when a station is clicked
     @dash_app.callback(
         [Output('station-details', 'children'),
-        Output('status', 'children'),
-        Output('feedback-div', 'style'),
-        Output('average-rating', 'children'),
-        Output('reviews-list', 'children')],
+         Output('status', 'children'),
+         Output('feedback-div', 'style'),
+         Output('average-rating', 'children'),
+         Output('reviews-list', 'children')],
         Input('station-map', 'clickData')
     )
-    def display_station_details(dataOfClickedStation):
-        """
-        Displays the details of the clicked station, its average rating, and any reviews.
-        """
-
-        def calculate_average_rating(station_reviews):
-            """Calculate the average rating based on a list of reviews."""
-            if station_reviews:
-                avg_rating = sum(review['review_star'] for review in station_reviews) / len(station_reviews)
-            else:
-                avg_rating = 0.0
-            return avg_rating
-        
-        def simulate_station_availability():
-            class Status(Enum):
-                AVAILABLE = "available"
-                OCCUPIED = "occupied"
-                OUT_OF_SERVICE = "out of service"
-                MAINTENANCE = "maintenance"
-            random_status = random.choice(list(Status))
-            return random_status
-        
+    def display_station_details(click_data):
         def simulate_rush_hours():
-            time_slots = ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM"]
-            random_data = np.random.normal(loc=2.5, scale=1.0, size=len(time_slots))
-            random_data = np.clip(random_data, 0, 5) # simulate 0-5 persons per hour
-            bar_chart = go.Figure(data=[go.Bar(x=time_slots, y=random_data, marker_color='skyblue')])
-            bar_chart.update_layout(
-                title='Simulated rush hour data',
-                xaxis_title='Time of Day',
-                yaxis_title='Persons per Hour',
-                template='plotly_white'
-            )
-            return bar_chart
+            time_slots = ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", 
+                        "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", 
+                        "4 PM", "5 PM"]
+            return RushHours.generate_random_data(time_slots)
 
-        if dataOfClickedStation:
-            point_data = dataOfClickedStation['points'][0]
-            station_id = point_data['customdata'][0]  # Get station ID from clicked data
+        if click_data:
+            station_id = click_data['points'][0]['customdata'][0]
             
-            # Fetch reviews for the selected station from the database
-            ratings_ref = db.reference('ratings')
-            all_reviews = ratings_ref.get() or {}
-            station_reviews = [review for review in all_reviews.values() if review['charging_station_id'] == station_id]
-            
-            # Prepare list of reviews to display
-            reviews_list = [html.P(f"{review['review_text']} (Rating: {review['review_star']})") for review in station_reviews]
-
-            # Display average rating, station availability and simulated rush hours
-            avg_rating = calculate_average_rating(station_reviews)
-            random_status = simulate_station_availability()
-            bar_chart = simulate_rush_hours()
-            
-            return (
-                html.Div([
+            try:
+                # Find station using domain service
+                station = next(s for s in station_service.repository.stations 
+                             if s.station_id == station_id)
+                
+                # Calculate average rating from domain entity
+                avg_rating = station.average_rating()
+                
+                # Generate status using domain value object
+                random_status = Status.get_random_status()
+                
+                # Generate rush hours data
+                rush_data = simulate_rush_hours()
+                
+                # Create details components
+                details = html.Div([
                     html.H3("Station Details"),
-                    html.P(f"Name: {point_data['customdata'][1]}"),
-                    html.P(f"Operator: {point_data['customdata'][2]}"),
-                    html.P(f"Power: {point_data['customdata'][3]} KW"),
-                    html.P(f"PLZ: {point_data['customdata'][4]}"),
-                ]),
-                html.Div([
-                    html.H4(f"Status: {random_status.value}"),
-                    dcc.Graph(figure=bar_chart, style={'height': '300px'})
-                ]),
-                {'display': 'block'},
-                html.H4(f"Average Rating: {avg_rating:.2f}"),
-                html.Div(reviews_list)
-            )
-        else:
-            return (
-                html.Div([
-                    html.H3("Charging Stations"),
-                    html.P(f"There are {len(df)} charging stations in total."),
-                    html.P("Please click on a station to view its details and leave a review.")
-                ]),
-                '', # no status
-                {'display': 'none'},
-                '', # no rating
-                ''  # no reviews
-            )
+                    html.P(f"Name: {station.name}"),
+                    html.P(f"Operator: {station.operator}"),
+                    html.P(f"Power: {station.power} KW"),
+                    html.P(f"PLZ: {station.postal_code.plz}"),         
+                ])
 
-    # Callback to handle the submission of feedback and ratings for a station
+                # Create status components
+                status_display = html.Div([
+                    html.H4(f"Status: {random_status.value}"),
+                    dcc.Graph(
+                        figure=go.Figure(
+                            data=[go.Bar(x=rush_data.time_slots, 
+                                       y=rush_data.data,
+                                       marker_color='skyblue')],
+                            layout=go.Layout(
+                                title='Simulated Rush Hour Data',
+                                xaxis_title='Time of Day',
+                                yaxis_title='Persons per Hour',
+                                template='plotly_white'
+                            )
+                        )
+                    )
+                ])
+
+                # Create reviews list
+                reviews = [html.P(f"{rating.comment} (Rating: {rating.value})") 
+                         for rating in station.ratings]
+
+                return (
+                    details,
+                    status_display,
+                    {'display': 'block'},
+                    html.H4(f"Average Rating: {avg_rating:.2f}"),
+                    html.Div(reviews)
+                )
+
+            except StopIteration:
+                pass  # Handle station not found
+
+        # Default return when no station selected
+        default_content = html.Div([
+            html.H3("Charging Stations"),
+            html.P(f"There are {len(df)} charging stations in total."),
+            html.P("Please click on a station to view its details and leave a review.")
+        ])
+        return (
+            default_content,
+            '',
+            {'display': 'none'},
+            '',
+            ''
+        )
+
     @dash_app.callback(
         [Output('feedback-output', 'children'),
-        Output('feedback-input', 'value'),
-        Output('rating-slider', 'value')],
+         Output('feedback-input', 'value'),
+         Output('rating-slider', 'value')],
         [Input('submit-feedback', 'n_clicks'),
-        Input('station-map', 'clickData')],
+         Input('station-map', 'clickData')],
         [State('feedback-input', 'value'),
-        State('rating-slider', 'value')]
+         State('rating-slider', 'value')]
     )
-    def submit_feedback(n_clicks, dataOfClickedStation, feedback, rating):
-        """Submits the feedback and rating for the selected station and stores it in the database."""
-        if n_clicks > 0 and feedback and rating and dataOfClickedStation:
+    def submit_feedback(n_clicks, click_data, feedback, rating):
+        if n_clicks > 0 and click_data and feedback and rating:
             user_id = session.get('user_id')
             if not user_id:
                 return "You need to log in to give a rating.", "", None
-            
-            station_id = dataOfClickedStation['points'][0]['customdata'][0]
+
+            station_id = click_data['points'][0]['customdata'][0]
             
             try:
-                # Store the feedback in the Firebase database
-                ratings_ref = db.reference('ratings')
-                ratings_ref.push({
-                    "user_id": user_id,
-                    "charging_station_id": station_id,
-                    "review_star": rating,
-                    "review_text": feedback,
-                    "review_date": datetime.now().isoformat()
-                })
+                station_service.add_rating_to_station(
+                    user_id=user_id,
+                    station_id=int(station_id),
+                    value=rating,
+                    comment=feedback
+                )
                 return "Thank you for your review!", "", None
             except Exception as e:
-                return f"Error adding review: {e}", feedback, rating
-        
+                return f"Error submitting review: {e}", feedback, rating
+
         return "", "", None
+
+    return dash_app
