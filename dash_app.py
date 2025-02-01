@@ -24,7 +24,7 @@ def create_dash_app(flask_app):
 
     # Load initial data
     try:
-        station_service.load_stations_from_csv(r'bounded_contexts\charging_station\src\infrastructure\data\ChargingStationData.csv')
+        station_service.load_stations_from_csv('bounded_contexts/charging_station/src/infrastructure/data/ChargingStationData.csv')
                                         
         station_service.load_all_ratings_to_stations()
     except Exception as e:
@@ -228,13 +228,15 @@ def create_dash_app(flask_app):
          State('rating-slider', 'value')]
     )
     def submit_feedback(n_clicks, click_data, feedback, rating):
-        if n_clicks > 0 and click_data and feedback and rating:
+        if not rating:
+            return "Please select a score", "", None
+        if n_clicks > 0 and click_data and feedback:
             user_id = session.get('user_id')
             if not user_id:
                 return "You need to log in to give a rating.", "", None
 
             station_id = click_data['points'][0]['customdata'][0]
-            
+            print('Goodby cruel world')
             try:
                 station_service.add_rating_to_station(
                     user_id=user_id,
