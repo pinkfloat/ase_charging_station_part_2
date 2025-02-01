@@ -29,6 +29,33 @@ app.secret_key = "supersecretkey"  # Used for flashing messages
 # Initialize Dash app
 create_dash_app(app) # Create and link the Dash app to the Flask app
 
+
+# Authentication decorator using UserService
+def login_required(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+        
+        try:
+            # Verify user exists through service
+            user = user_service.user_repository.load_from_database()
+            user_exists = any(u.id == session['user_id'] for u in user)
+            if not user_exists:
+                flash("Session invalid. Please login again.", "error")
+                return redirect(url_for('logout'))
+        except Exception as e:
+            flash(f"Authentication error: {e}", "error")
+            return redirect(url_for('logout'))
+            
+        return func(*args, **kwargs)
+    return decorated_function
+
+
+
+
+
+
 # Route to display the home page
 @app.route("/")
 def index():
