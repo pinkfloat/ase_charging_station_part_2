@@ -5,10 +5,8 @@ from charging_station.src.infrastructure.repositories.rating_repository import R
 
 import firebase_admin
 
-
 from unittest.mock import MagicMock
 from firebase_admin import credentials
-
 
 @pytest.fixture
 def mock_database(monkeypatch):
@@ -162,11 +160,6 @@ def test_save_invalid_rating_to_database(mock_database, monkeypatch):
     with pytest.raises(ValueError, match="Invalid rating object"):
         repo.save_rating_to_database(invalid_rating)
 
-
-
-
-## new additional test cases
-
 def test_firebase_initialization_when_not_initialized(monkeypatch):
     """
     Test that when no Firebase app is initialized (firebase_admin._apps is empty),
@@ -204,3 +197,54 @@ def test_firebase_initialization_when_not_initialized(monkeypatch):
         fake_cert,
         {'databaseURL': 'https://ase-charging-default-rtdb.europe-west1.firebasedatabase.app/'}
     )
+
+@pytest.fixture
+def mock_broken_database(monkeypatch):
+    """Mock the Firebase database using monkeypatch."""
+    # Mock data to simulate Firebase DB
+    mock_data = {
+        "rating1": {
+            "user_id": "user_123",
+            "charging_station_id": 1,
+            "review_date": "2025-01-01",
+            "review_star": 4,
+            "review_text": "Great station!"
+        },
+        "rating2": {
+            "user_id": "user_456",
+            "charging_station_id": "something is off",
+            "review_date": "2025-01-02",
+            "review_star": 5,
+            "review_text": "Excellent service!"
+        },
+    }
+
+    class MockFirebaseDB:
+        def __init__(self):
+            self.data = mock_data
+            self._apps = ["something"]
+
+        def reference(self, path):
+            return self
+
+        def get(self):
+            return self.data
+        
+        def push(self, rating_data):
+            new_raintg_id = "rating3"
+            self.data[new_raintg_id] = rating_data
+
+    mock_db = MockFirebaseDB()
+
+    # Patch the RatingRepository's db attribute
+    monkeypatch.setattr("charging_station.src.infrastructure.repositories.rating_repository.db", mock_db)
+    return mock_db
+
+def test_load_broken_station_ratings_from_database(mock_broken_database, monkeypatch, capfd):
+    monkeypatch.setattr(firebase_admin, '_apps', ['dummy_app'])
+    
+    repo = RatingRepository("mocked_path")
+    repo.load_station_ratings_from_database()
+
+    captured = capfd.readouterr()
+    assert "Warning: invalid rating" in captured.out
