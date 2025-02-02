@@ -24,7 +24,7 @@ source ./ase-env/bin/activate  # On Linux
 
 ### 3. Install dependencies and setup project paths:
 ```bash
-pip install .
+pip install -e .
 ```
 
 ### 4. Run tests:
