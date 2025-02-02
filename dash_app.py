@@ -4,8 +4,8 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from charging_station.src.infrastructure.repositories.rated_charging_station_repository import RatedChargingStationRepository
-from charging_station.src.application.services.charging_station_service import ChargingStationService
+from bounded_contexts.charging_station.src.infrastructure.repositories.rated_charging_station_repository import RatedChargingStationRepository
+from bounded_contexts.charging_station.src.application.services.charging_station_service import ChargingStationService
 
 def create_dash_app(flask_app):
     dash_app = Dash(__name__, server=flask_app, 

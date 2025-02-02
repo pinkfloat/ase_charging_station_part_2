@@ -1,4 +1,4 @@
-from user.src.domain.entities.user import User
+from bounded_contexts.user.src.domain.entities.user import User
 
 class UserCreatedEvent:
     def __init__(self, user: User):

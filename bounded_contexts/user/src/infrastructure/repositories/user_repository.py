@@ -4,8 +4,8 @@ from firebase_admin import credentials, initialize_app, db
 from datetime import datetime
 import hashlib
 
-from user.src.domain.entities.user import User
-from user.src.domain.events.user_created_event import UserCreatedEvent
+from bounded_contexts.user.src.domain.entities.user import User
+from bounded_contexts.user.src.domain.events.user_created_event import UserCreatedEvent
 
 class UserRepository:
     def __init__(self, firebase_secret_json, event_publisher=None):

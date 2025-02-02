@@ -1,5 +1,5 @@
 # charging_station/src/application/services/charging_station_service.py
-from charging_station.src.infrastructure.repositories.rated_charging_station_repository import RatedChargingStationRepository
+from bounded_contexts.charging_station.src.infrastructure.repositories.rated_charging_station_repository import RatedChargingStationRepository
 from typing import Optional
 
 class ChargingStationService:
