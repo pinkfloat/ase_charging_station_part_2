@@ -26,14 +26,17 @@ class RatingRepository:
         rating_dict = self.station_ratings_ref.get() or {}  # Get all ratings or an empty dictionary
 
         for rating_id, data in rating_dict.items():
-            rating = Rating(
-                user_id=data["user_id"],
-                station_id=data["charging_station_id"],
-                date=data["review_date"],
-                value=data["review_star"],
-                comment=data["review_text"],
-            )
-            self.station_ratings.append(rating)
+            try:
+                rating = Rating(
+                    user_id=data["user_id"],
+                    station_id=int(data["charging_station_id"]),
+                    date=data["review_date"],
+                    value=int(data["review_star"]),
+                    comment=data["review_text"],
+                )
+                self.station_ratings.append(rating)
+            except (ValueError, TypeError, KeyError) as e:
+                print(f"Warning: invalid rating {data} - Error: {e}")
         return self.station_ratings
 
     def create_rating(self, user_id: str, station_id: int, value: int, comment: str) -> Rating:
