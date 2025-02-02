@@ -228,7 +228,6 @@ def create_dash_app(flask_app):
                 return "You need to log in to give a rating.", "", None
 
             station_id = click_data['points'][0]['customdata'][0]
-            print('Goodby cruel world')
             try:
                 station_service.add_rating_to_station(
                     user_id=user_id,
