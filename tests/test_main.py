@@ -219,3 +219,6 @@ def test_logout_clears_session(client):
     assert response.status_code == 200
     assert b"Login" in response.data  # User should be redirected to login
 
+
+
+
